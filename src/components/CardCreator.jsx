@@ -886,7 +886,7 @@ function CardCreator({
 
     try {
       const response = await fetch(
-        'http://localhost:3001/api/ready-cards',
+        'https://est-povod-api.onrender.com/api/ready-cards',
         {
           method: 'POST',
           headers: {
