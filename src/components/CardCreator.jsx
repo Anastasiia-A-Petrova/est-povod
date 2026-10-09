@@ -464,6 +464,14 @@ function CardCreator({
   const infoUrl =
     occasion.infoUrl || null
 
+
+  const shareCaption = [
+    '☀️ Открытка создана в приложении «ЕСТЬ ПОВОД!»',
+    infoUrl
+      ? `Подробнее о празднике: ${infoUrl}`
+      : 'Сайт «ЕСТЬ ПОВОД!»: https://est-povod-nnm.pages.dev/',
+  ].join('\n\n')
+
   /*
    * Находим именно открытку, которая сейчас
    * находится в финальном предпросмотре.
@@ -776,8 +784,8 @@ function CardCreator({
         if (canShareFile) {
           await navigator.share({
             files: [file],
-            title: occasion.title,
-            text: greeting,
+            title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
+            text: `${greeting}\n\n${shareCaption}`,
           })
 
           return
@@ -1091,11 +1099,11 @@ function CardCreator({
         if (canShareFile) {
           await navigator.share({
             files: [file],
-            title:
+            title: `ЕСТЬ ПОВОД! — ${
               selectedReadyCard.title ||
-              occasion.title,
-            text:
-              'Открытка найдена через «ЕСТЬ ПОВОД»',
+              occasion.title
+            }`,
+            text: shareCaption,
           })
 
           return

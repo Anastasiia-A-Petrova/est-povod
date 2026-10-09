@@ -2122,3 +2122,257 @@ a {
     justify-content: flex-start;
   }
 }
+
+
+/* =========================================================
+   MOBILE FIX — ЕСТЬ ПОВОД!
+   ========================================================= */
+
+/* Учитываем границы и внутренние отступы */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Планшеты и небольшие экраны */
+@media (max-width: 800px) {
+  .calendar-section {
+    padding: 14px 10px;
+    min-width: 0;
+  }
+
+  .calendar-grid {
+    width: 100%;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .calendar-day {
+    min-width: 0;
+    min-height: 88px;
+    padding: 7px 2px;
+    overflow: hidden;
+  }
+
+  .day-number {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .day-main-occasion {
+    gap: 2px;
+    margin-top: 6px;
+    padding: 0;
+  }
+
+  .day-main-icon {
+    font-size: 12px;
+  }
+
+  .day-main-title {
+    min-width: 0;
+    font-size: 9px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    text-overflow: clip;
+    max-width: 100%;
+  }
+
+  .day-markers {
+    gap: 3px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Карточка праздника: иконка сверху слева,
+     текст и кнопка занимают доступную ширину */
+  .day-occasion-card {
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    padding: 13px;
+    min-width: 0;
+  }
+
+  .occasion-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 19px;
+  }
+
+  .occasion-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .occasion-info h3 {
+    font-size: 15px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .occasion-info p {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .day-occasion-actions {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    justify-content: stretch;
+    margin-top: 4px;
+  }
+
+  .day-occasion-actions .congratulate-button {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px 14px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+    font-size: 14px;
+  }
+}
+
+/* Узкие телефоны */
+@media (max-width: 480px) {
+  .app-shell {
+    padding: 18px 8px 36px;
+    min-width: 0;
+  }
+
+  .calendar-section {
+    padding: 10px 5px;
+    border-radius: 16px;
+  }
+
+  .weekday {
+    padding: 7px 0;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .calendar-day {
+    min-height: 76px;
+    padding: 6px 1px;
+  }
+
+  .day-number {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .day-main-occasion {
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 5px;
+  }
+
+  .day-main-icon {
+    font-size: 14px;
+  }
+
+  .day-main-title {
+    width: 100%;
+    font-size: 9px;
+    line-height: 1.2;
+    text-align: center;
+    -webkit-line-clamp: 3;
+  }
+
+  .day-markers {
+    margin-top: 5px;
+  }
+
+  .day-marker {
+    width: 5px;
+    height: 5px;
+  }
+
+  .day-occasion-card {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 9px;
+    padding: 11px;
+    border-radius: 13px;
+  }
+
+  .occasion-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 17px;
+  }
+
+  .occasion-meta {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    overflow-wrap: anywhere;
+  }
+
+  .occasion-info h3 {
+    font-size: 14px;
+  }
+
+  .occasion-info p {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .day-occasion-actions {
+    gap: 8px;
+  }
+
+  .day-occasion-actions .congratulate-button {
+    min-height: 46px;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  /* Не даём модальным окнам выходить за границы экрана */
+  .personal-modal,
+  .congratulate-modal {
+    padding: 10px;
+  }
+
+  .personal-modal-card,
+  .congratulate-modal-card {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+  }
+}
+
+/* На совсем узких устройствах */
+@media (max-width: 360px) {
+  .calendar-day {
+    min-height: 68px;
+  }
+
+  .day-main-title {
+    font-size: 8px;
+  }
+
+  .day-occasion-card {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .occasion-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
