@@ -3,7 +3,7 @@ import 'dotenv/config'
 import { searchReadyCards } from './ready-cards/index.js'
 
 const BASE_URL = 'https://azbyka.ru/days'
-const PORT = 3001
+const PORT = Number(process.env.PORT) || 3001
 
 let token = null
 let tokenExpiresAt = 0
