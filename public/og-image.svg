@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="630" viewBox="0 0 1200 630">
+
+  <rect width="1200" height="630" fill="#6fb8f4"/>
+
+  <!-- Декоративные круги -->
+  <circle cx="1090" cy="80" r="160" fill="#f7f5e8" opacity=".65"/>
+  <circle cx="1100" cy="620" r="190" fill="#f7f5e8" opacity=".55"/>
+  <circle cx="50" cy="600" r="110" fill="#f7f5e8" opacity=".45"/>
+
+  <!-- Солнечные лучи -->
+  <g stroke="#E8A62E" stroke-width="12" stroke-linecap="round">
+    <path d="M290 112 V145"/>
+    <path d="M290 365 V398"/>
+    <path d="M164 255 H131"/>
+    <path d="M416 255 H449"/>
+    <path d="M201 166 L178 143"/>
+    <path d="M379 344 L402 367"/>
+    <path d="M201 344 L178 367"/>
+    <path d="M379 166 L402 143"/>
+  </g>
+
+  <!-- Солнце -->
+  <circle cx="290" cy="255" r="105" fill="#FFD166"/>
+
+  <!-- Глаза -->
+  <circle cx="254" cy="237" r="9" fill="#263449"/>
+  <circle cx="326" cy="237" r="9" fill="#263449"/>
+
+  <!-- Улыбка -->
+  <path d="M250 275 Q290 317 330 275"
+        fill="none"
+        stroke="#263449"
+        stroke-width="10"
+        stroke-linecap="round"/>
+
+  <!-- Румянец -->
+  <ellipse cx="231" cy="270" rx="13" ry="7" fill="#F4A38A" opacity=".8"/>
+  <ellipse cx="349" cy="270" rx="13" ry="7" fill="#F4A38A" opacity=".8"/>
+
+  <!-- Название -->
+  <text x="470" y="230"
+        font-family="Arial, sans-serif"
+        font-size="76"
+        font-weight="800"
+        fill="#263449">ЕСТЬ ПОВОД!</text>
+
+  <!-- Подзаголовок -->
+  <text x="470" y="315"
+        font-family="Arial, sans-serif"
+        font-size="29"
+        fill="#465367">Каждой важной дате —</text>
+
+  <text x="470" y="355"
+        font-family="Arial, sans-serif"
+        font-size="29"
+        fill="#465367">своё поздравление</text>
+
+  <!-- Нижняя подпись -->
+  <g font-family="Arial, sans-serif"
+     font-size="22"
+     font-weight="600"
+     fill="#465367">
+    <text x="250" y="505" text-anchor="middle">Праздники</text>
+    <text x="510" y="505" text-anchor="middle">Открытки</text>
+    <text x="780" y="505" text-anchor="middle">Близкие</text>
+  </g>
+
+</svg>
