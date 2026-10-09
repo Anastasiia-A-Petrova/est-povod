@@ -464,12 +464,10 @@ function CardCreator({
   const infoUrl =
     occasion.infoUrl || null
 
-
   const shareCaption = [
     '☀️ Открытка создана в приложении «ЕСТЬ ПОВОД!»',
-    infoUrl
-      ? `Подробнее о празднике: ${infoUrl}`
-      : 'Сайт «ЕСТЬ ПОВОД!»: https://est-povod-nnm.pages.dev/',
+    `🔎 Подробнее о празднике: ${infoUrl || 'Ссылка не указана'}`,
+    '🌐 Сайт «ЕСТЬ ПОВОД!»: https://est-povod-nnm.pages.dev/',
   ].join('\n\n')
 
   /*
