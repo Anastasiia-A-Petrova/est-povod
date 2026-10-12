@@ -906,6 +906,21 @@ function CardCreator({
         * окно выбора чата.
         */
 
+        telegram.onEvent('shareMessageSent', () => {
+          console.log('Telegram: shareMessageSent')
+        })
+
+        telegram.onEvent('shareMessageFailed', (event) => {
+          console.error(
+            'Telegram: shareMessageFailed',
+            event,
+          )
+
+          alert(
+            `Telegram не смог отправить открытку.\n\n${JSON.stringify(event)}`,
+          )
+        })
+
         telegram.shareMessage(data.msgId)
 
         return
