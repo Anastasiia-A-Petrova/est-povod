@@ -718,7 +718,7 @@ const server =
             initData,
             imageBase64,
             caption = '',
-            filename = 'otkrytka.png',
+            filename = 'otkrytka.jpg',
           } = body
 
           // Проверяем, что запрос действительно пришёл
@@ -730,9 +730,9 @@ const server =
           }
 
           // Убираем возможный префикс:
-          // data:image/png;base64,...
+          // data:image/jpeg;base64,...
           const base64 = imageBase64.replace(
-            /^data:image\/png;base64,/,
+            /^data:image\/jpeg;base64,/,
             ''
           )
 
@@ -757,6 +757,10 @@ const server =
 
           const imageUrl =
             `${PUBLIC_BASE_URL}/api/telegram/file/${fileId}`
+
+          console.log('Telegram card image URL:', imageUrl)
+          console.log('Telegram card image size:', imageBuffer.length)
+          console.log('Telegram card filename:', filename)            
 
           const telegramResponse = await fetch(
             `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/savePreparedInlineMessage`,
@@ -860,7 +864,7 @@ const server =
           }
 
           response.writeHead(200, {
-            'Content-Type': 'image/png',
+            'Content-Type': 'image/jpeg',
             'Content-Length': file.buffer.length,
             'Cache-Control': 'no-store',
             'Content-Disposition': `inline; filename="${file.filename}"`,
