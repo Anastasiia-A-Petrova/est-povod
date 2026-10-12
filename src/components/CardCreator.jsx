@@ -692,6 +692,7 @@ function CardCreator({
               resolve(
                 reader.result,
               )
+            }
 
             reader.onerror = () => {
               reject(
