@@ -716,11 +716,17 @@ function CardCreator({
     try {
       await waitForRender()
 
-      restoreImages = await prepareImagesForExport(card)
+      restoreImages =
+        await prepareImagesForExport(card)
 
       await waitForRender()
 
-      const blob = await toBlob(card, {
+      /*
+      * Сначала создаём обычный PNG.
+      * Это сохраняет существующее качество
+      * и внешний вид открытки.
+      */
+      const pngBlob = await toBlob(card, {
         pixelRatio: 2,
         cacheBust: true,
         backgroundColor: '#ffffff',
@@ -728,12 +734,202 @@ function CardCreator({
           'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
       })
 
-      if (!blob) {
-        throw new Error('html-to-image не вернул Blob')
+      if (!pngBlob) {
+        throw new Error(
+          'html-to-image не вернул Blob',
+        )
       }
 
+      /*
+      * Telegram InlineQueryResultPhoto требует JPEG.
+      *
+      * Поэтому превращаем PNG в JPEG прямо
+      * в браузере. На самой открытке ничего
+      * не меняем.
+      */
+      const pngUrl =
+        URL.createObjectURL(pngBlob)
+
+      const image = new Image()
+
+      await new Promise(
+        (resolve, reject) => {
+          image.onload = resolve
+          image.onerror = () =>
+            reject(
+              new Error(
+                'Не удалось подготовить JPEG',
+              ),
+            )
+
+          image.src = pngUrl
+        },
+      )
+
+      const canvas =
+        document.createElement('canvas')
+
+      canvas.width = image.naturalWidth
+      canvas.height = image.naturalHeight
+
+      const context =
+        canvas.getContext('2d')
+
+      if (!context) {
+        URL.revokeObjectURL(pngUrl)
+
+        throw new Error(
+          'Не удалось создать Canvas',
+        )
+      }
+
+      context.fillStyle = '#ffffff'
+
+      context.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      )
+
+      context.drawImage(
+        image,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      )
+
+      const jpegBlob =
+        await new Promise(
+          (resolve) =>
+            canvas.toBlob(
+              resolve,
+              'image/jpeg',
+              0.92,
+            ),
+        )
+
+      URL.revokeObjectURL(pngUrl)
+
+      if (!jpegBlob) {
+        throw new Error(
+          'Не удалось создать JPEG',
+        )
+      }
+
+      /*
+      * ---------------------------------------------------------
+      * TELEGRAM MINI APP
+      * ---------------------------------------------------------
+      */
+
+      const telegram =
+        window.Telegram?.WebApp
+
+      if (
+        telegram &&
+        telegram.initData &&
+        typeof telegram.shareMessage ===
+          'function'
+      ) {
+        /*
+        * Превращаем JPEG в base64,
+        * чтобы передать его на Render.
+        */
+        const imageBase64 =
+          await new Promise(
+            (resolve, reject) => {
+              const reader =
+                new FileReader()
+
+              reader.onload = () => {
+                resolve(
+                  reader.result,
+                )
+              }
+
+              reader.onerror = () => {
+                reject(
+                  new Error(
+                    'Не удалось подготовить изображение для Telegram',
+                  ),
+                )
+              }
+
+              reader.readAsDataURL(
+                jpegBlob,
+              )
+            },
+          )
+
+        const response =
+          await fetch(
+            'https://est-povod-api.onrender.com/api/telegram/share',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type':
+                  'application/json',
+              },
+              body: JSON.stringify({
+                initData:
+                  telegram.initData,
+
+                imageBase64,
+
+                caption:
+                  `${greeting}\n\n${shareCaption}`,
+
+                filename:
+                  'otkrytka.jpg',
+              }),
+            },
+          )
+
+        const data =
+          await response.json()
+
+        if (
+          !response.ok ||
+          !data.ok ||
+          !data.msgId
+        ) {
+          throw new Error(
+            data.error ||
+              'Telegram не смог подготовить открытку',
+          )
+        }
+
+        /*
+        * Telegram открывает своё нативное
+        * окно выбора чата.
+        */
+        telegram.shareMessage(
+          data.msgId,
+          (success) => {
+            if (!success) {
+              console.warn(
+                'Telegram не отправил открытку',
+              )
+            }
+          },
+        )
+
+        return
+      }
+
+      /*
+      * ---------------------------------------------------------
+      * ОБЫЧНЫЙ БРАУЗЕР
+      * ---------------------------------------------------------
+      *
+      * Telegram здесь не используется.
+      * Сохраняем прежнее поведение сайта.
+      */
+
       const file = new File(
-        [blob],
+        [pngBlob],
         'otkrytka.png',
         {
           type: 'image/png',
@@ -742,8 +938,10 @@ function CardCreator({
 
       const shareData = {
         files: [file],
-        title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
-        text: `${greeting}\n\n${shareCaption}`,
+        title:
+          `ЕСТЬ ПОВОД! — ${occasion.title}`,
+        text:
+          `${greeting}\n\n${shareCaption}`,
       }
 
       const canUseWebShare =
@@ -757,49 +955,46 @@ function CardCreator({
         typeof navigator.canShare === 'function'
       ) {
         try {
-          canShareFile = navigator.canShare({
-            files: [file],
-          })
-        } catch (error) {
-          console.warn(
-            'Проверка navigator.canShare не удалась:',
-            error,
-          )
+          canShareFile =
+            navigator.canShare({
+              files: [file],
+            })
+        } catch {
+          canShareFile = false
         }
       }
 
-      if (canUseWebShare && canShareFile) {
-        await navigator.share(shareData)
+      if (
+        canUseWebShare &&
+        canShareFile
+      ) {
+        await navigator.share(
+          shareData,
+        )
+
         return
       }
 
-      /*
-       * Telegram WebView или браузер не умеет
-       * передавать созданный PNG через Web Share.
-       *
-       * В таком случае хотя бы открываем системное
-       * меню "Поделиться" для текста и ссылок.
-       */
       if (canUseWebShare) {
         await navigator.share({
-          title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
-          text: `${greeting}\n\n${shareCaption}`,
+          title:
+            `ЕСТЬ ПОВОД! — ${occasion.title}`,
+          text:
+            `${greeting}\n\n${shareCaption}`,
         })
 
         return
       }
 
-      /*
-       * Последний fallback:
-       * копируем текст поздравления и ссылки.
-       */
-      if (navigator.clipboard?.writeText) {
+      if (
+        navigator.clipboard?.writeText
+      ) {
         await navigator.clipboard.writeText(
           `${greeting}\n\n${shareCaption}`,
         )
 
         alert(
-          'Telegram не разрешил отправить изображение напрямую. Текст поздравления и ссылки скопированы.',
+          'Текст поздравления и ссылки скопированы.',
         )
 
         return
@@ -809,11 +1004,9 @@ function CardCreator({
         'На этом устройстве функция «Поделиться» недоступна.',
       )
     } catch (error) {
-      /*
-       * Пользователь сам закрыл системное
-       * окно "Поделиться".
-       */
-      if (error?.name === 'AbortError') {
+      if (
+        error?.name === 'AbortError'
+      ) {
         return
       }
 
@@ -823,11 +1016,11 @@ function CardCreator({
       )
 
       alert(
-        `Ошибка при создании/отправке открытки:\n${
-          error?.message || error
+        `Ошибка при отправке открытки: ${
+          error?.message ||
+          'Неизвестная ошибка'
         }`,
       )
-
     } finally {
       restoreImages()
       setIsExporting(false)
