@@ -682,14 +682,70 @@ function CardCreator({
         )
       }
 
-      alert(
-        `PNG создан.\n\nРазмер: ${blob.size} байт`,
-      )
+      const imageBase64 =
+        await new Promise(
+          (resolve, reject) => {
+            const reader =
+              new FileReader()
 
-      const url =
-        URL.createObjectURL(blob)
+            reader.onload = () => {
+              resolve(
+                reader.result,
+              )
 
-      window.location.href = url
+            reader.onerror = () => {
+              reject(
+                new Error(
+                  'Не удалось подготовить открытку',
+                ),
+              )
+            }
+
+            reader.readAsDataURL(blob)
+          },
+        )
+
+      const response =
+        await fetch(
+          'https://est-povod-api.onrender.com/api/telegram/download',
+          {
+            method: 'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json',
+            },
+
+            body: JSON.stringify({
+              imageBase64,
+              filename:
+                'otkrytka.png',
+            }),
+          },
+        )
+
+      const data =
+        await response.json()
+
+      if (
+        !response.ok ||
+        !data.ok ||
+        !data.downloadUrl
+      ) {
+        throw new Error(
+          data.error ||
+            'Не удалось подготовить скачивание',
+        )
+      }
+
+      /*
+      * Открываем настоящий URL файла.
+      * Backend отдаёт его как attachment,
+      * поэтому Android должен предложить
+      * скачать PNG.
+      */
+      window.location.href =
+        data.downloadUrl
 
     } catch (error) {
       console.error(
@@ -698,7 +754,7 @@ function CardCreator({
       )
 
       alert(
-        'Ошибка:\n\n' +
+        'Не получилось сохранить открытку.\n\n' +
         (error?.message || String(error)),
       )
     } finally {

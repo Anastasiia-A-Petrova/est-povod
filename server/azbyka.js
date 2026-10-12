@@ -709,7 +709,187 @@ const server =
           `http://localhost:${PORT}`,
         )
 
+      if (
+        request.method === 'POST' &&
+        request.url === '/api/telegram/download'
+      ) {
+        try {
+          const body = await readJsonBody(request)
 
+          const {
+            imageBase64,
+            filename = 'otkrytka.png',
+          } = body
+
+          if (!imageBase64) {
+            response.writeHead(400, {
+              'Content-Type':
+                'application/json; charset=utf-8',
+            })
+
+            response.end(
+              JSON.stringify({
+                ok: false,
+                error:
+                  'imageBase64 is required',
+              }),
+            )
+
+            return
+          }
+
+          const base64Data =
+            imageBase64.replace(
+              /^data:image\/png;base64,/,
+              '',
+            )
+
+          const imageBuffer =
+            Buffer.from(
+              base64Data,
+              'base64',
+            )
+
+          if (!imageBuffer.length) {
+            response.writeHead(400, {
+              'Content-Type':
+                'application/json; charset=utf-8',
+            })
+
+            response.end(
+              JSON.stringify({
+                ok: false,
+                error: 'Empty image',
+              }),
+            )
+
+            return
+          }
+
+          const fileId =
+            crypto.randomUUID()
+
+          telegramFiles.set(fileId, {
+            buffer: imageBuffer,
+            contentType: 'image/png',
+            filename,
+            expiresAt:
+              Date.now() +
+              30 * 60 * 1000,
+          })
+
+          const baseUrl =
+            process.env.PUBLIC_BASE_URL ||
+            'https://est-povod-api.onrender.com'
+
+          const downloadUrl =
+            `${baseUrl}/api/telegram/download/${fileId}`
+
+          console.log(
+            'Download card URL:',
+            downloadUrl,
+          )
+
+          console.log(
+            'Download card size:',
+            imageBuffer.length,
+          )
+
+          response.writeHead(200, {
+            'Content-Type':
+              'application/json; charset=utf-8',
+
+            'Access-Control-Allow-Origin':
+              '*',
+          })
+
+          response.end(
+            JSON.stringify({
+              ok: true,
+              downloadUrl,
+            }),
+          )
+        } catch (error) {
+          console.error(
+            'Download card error:',
+            error,
+          )
+
+          response.writeHead(500, {
+            'Content-Type':
+              'application/json; charset=utf-8',
+
+            'Access-Control-Allow-Origin':
+              '*',
+          })
+
+          response.end(
+            JSON.stringify({
+              ok: false,
+              error:
+                error?.message ||
+                'Failed to prepare download',
+            }),
+          )
+        }
+
+        return
+      }
+
+      if (
+        request.method === 'GET' &&
+        request.url.startsWith(
+          '/api/telegram/download/',
+        )
+      ) {
+        const fileId =
+          request.url
+            .split('/api/telegram/download/')[1]
+            ?.split('?')[0]
+
+        const file =
+          telegramFiles.get(fileId)
+
+        if (
+          !file ||
+          file.expiresAt < Date.now()
+        ) {
+          response.writeHead(404, {
+            'Content-Type':
+              'text/plain; charset=utf-8',
+          })
+
+          response.end(
+            'Файл не найден или срок ссылки истёк.',
+          )
+
+          return
+        }
+
+        response.writeHead(200, {
+          'Content-Type':
+            file.contentType ||
+            'image/png',
+
+          'Content-Length':
+            file.buffer.length,
+
+          'Content-Disposition':
+            `attachment; filename="${file.filename || 'otkrytka.png'}"`,
+
+          'Cache-Control':
+            'no-store',
+
+          'Access-Control-Allow-Origin':
+            '*',
+        })
+
+        response.end(file.buffer)
+
+        return
+      }
+
+    
       if (request.method === 'POST' && request.url === '/api/telegram/share') {
         try {
           const body = await readJsonBody(request)
