@@ -746,10 +746,19 @@ function CardCreator({
       * скачать PNG.
       */
 
-      window.open(
-        data.downloadUrl,
-        '_blank',
-      )
+      const link =
+        document.createElement('a')
+
+      link.href = data.downloadUrl
+      link.download = 'otkrytka.png'
+      link.target = '_blank'
+      link.rel = 'noopener'
+
+      document.body.appendChild(link)
+
+      link.click()
+
+      link.remove()
 
     } catch (error) {
       console.error(
