@@ -823,8 +823,11 @@ function CardCreator({
       )
 
       alert(
-        'Не удалось открыть меню «Поделиться». Попробуйте ещё раз.',
+        `Ошибка при создании/отправке открытки:\n${
+          error?.message || error
+        }`,
       )
+
     } finally {
       restoreImages()
       setIsExporting(false)
