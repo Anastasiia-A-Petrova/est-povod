@@ -773,11 +773,13 @@ const server =
                 user_id: telegramUser.id,
 
                 result: {
-                  type: 'photo',
+                  type: 'article',
                   id: fileId,
-                  photo_url: imageUrl,
-                  thumbnail_url: imageUrl,
-                  caption,
+                  title: 'ЕСТЬ ПОВОД!',
+                  description: 'Проверка Telegram Share',
+                  input_message_content: {
+                    message_text: caption,
+                  },
                 },
 
                 allow_user_chats: true,
@@ -789,6 +791,11 @@ const server =
           )
 
           const telegramData = await telegramResponse.json()
+
+          console.log(
+            'Telegram prepared message response:',
+            JSON.stringify(telegramData, null, 2),
+          )
 
           if (!telegramResponse.ok || !telegramData.ok) {
             console.error(
