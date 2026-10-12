@@ -745,8 +745,11 @@ function CardCreator({
       * поэтому Android должен предложить
       * скачать PNG.
       */
-      window.location.href =
-        data.downloadUrl
+
+      window.open(
+        data.downloadUrl,
+        '_blank',
+      )
 
     } catch (error) {
       console.error(
