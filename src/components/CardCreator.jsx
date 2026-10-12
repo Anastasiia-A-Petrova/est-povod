@@ -907,17 +907,13 @@ function CardCreator({
         */
 
         telegram.onEvent('shareMessageSent', () => {
-          console.log('Telegram: shareMessageSent')
+          alert('Telegram сообщил: открытка отправлена!')
         })
 
         telegram.onEvent('shareMessageFailed', (event) => {
-          console.error(
-            'Telegram: shareMessageFailed',
-            event,
-          )
-
           alert(
-            `Telegram не смог отправить открытку.\n\n${JSON.stringify(event)}`,
+            'Telegram сообщил об ошибке:\n\n' +
+            JSON.stringify(event, null, 2)
           )
         })
 
