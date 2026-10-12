@@ -827,14 +827,6 @@ function CardCreator({
       const telegram =
         window.Telegram?.WebApp
 
-      alert(
-        `Telegram API:\n` +
-        `WebApp: ${!!telegram}\n` +
-        `initData: ${!!telegram?.initData}\n` +
-        `version: ${telegram?.version || 'нет'}\n` +
-        `shareMessage: ${typeof telegram?.shareMessage}`,
-      )
-
       if (
         telegram &&
         telegram.initData &&
@@ -913,16 +905,8 @@ function CardCreator({
         * Telegram открывает своё нативное
         * окно выбора чата.
         */
-        telegram.shareMessage(
-          data.msgId,
-          (success) => {
-            if (!success) {
-              console.warn(
-                'Telegram не отправил открытку',
-              )
-            }
-          },
-        )
+
+        telegram.shareMessage(data.msgId)
 
         return
       }
