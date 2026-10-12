@@ -917,31 +917,31 @@ function CardCreator({
           )
         })
 
-        console.log('Telegram: calling shareMessage', data.msgId)
-
         try {
-          telegram.shareMessage(data.msgId, (success) => {
-            console.log('Telegram shareMessage callback:', success)
+          console.log(
+            'Telegram: calling shareMessage',
+            data.msgId,
+          )
 
-            if (success) {
-              console.log('Telegram: share callback success')
-            } else {
-              console.error('Telegram: share callback returned false')
-            }
-          })
+          telegram.shareMessage(data.msgId)
 
-          console.log('Telegram: shareMessage call finished')
+          console.log(
+            'Telegram: shareMessage call finished',
+          )
+
         } catch (shareError) {
-          console.error('Telegram shareMessage threw:', shareError)
+          console.error(
+            'Telegram shareMessage threw:',
+            shareError,
+          )
 
           alert(
             `Ошибка Telegram shareMessage:\n\n` +
-            `${shareError?.message || shareError}`
+            `${shareError?.message || shareError}`,
           )
         }
 
-        return
-
+        return  
       }
 
       /*
