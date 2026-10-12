@@ -773,13 +773,12 @@ const server =
                 user_id: telegramUser.id,
 
                 result: {
-                  type: 'article',
+                  type: 'photo',
                   id: fileId,
-                  title: 'ЕСТЬ ПОВОД!',
-                  description: 'Проверка Telegram Share',
-                  input_message_content: {
-                    message_text: caption || 'Проверка Telegram Share',
-                  },
+                  photo_url: imageUrl,
+                  thumbnail_url: imageUrl,
+                  caption: caption || 'ЕСТЬ ПОВОД!',
+                  parse_mode: 'HTML',
                 },
 
                 allow_user_chats: true,

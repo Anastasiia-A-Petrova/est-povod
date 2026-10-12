@@ -663,10 +663,12 @@ function CardCreator({
     try {
       await waitForRender()
 
-      restoreImages = await prepareImagesForExport(card)
+      restoreImages =
+        await prepareImagesForExport(card)
+
       await waitForRender()
 
-      const dataUrl = await toPng(card, {
+      const blob = await toBlob(card, {
         pixelRatio: 2,
         cacheBust: true,
         backgroundColor: '#ffffff',
@@ -674,25 +676,75 @@ function CardCreator({
           'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
       })
 
+      if (!blob) {
+        throw new Error(
+          'html-to-image не вернул Blob',
+        )
+      }
+
+      const file = new File(
+        [blob],
+        'otkrytka.png',
+        {
+          type: 'image/png',
+        },
+      )
+
+      /*
+      * На телефоне пробуем открыть
+      * системное меню для файла.
+      */
+      if (
+        navigator.share &&
+        navigator.canShare?.({
+          files: [file],
+        })
+      ) {
+        await navigator.share({
+          files: [file],
+          title: 'ЕСТЬ ПОВОД!',
+        })
+
+        return
+      }
+
+      /*
+      * В обычном браузере сохраняем
+      * PNG обычным скачиванием.
+      */
+      const url =
+        URL.createObjectURL(blob)
+
       const link =
         document.createElement('a')
 
+      link.href = url
       link.download = 'otkrytka.png'
-      link.href = dataUrl
 
       document.body.appendChild(link)
       link.click()
       link.remove()
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 1000)
     } catch (error) {
+      /*
+      * Отмена системного окна пользователем
+      * не считается ошибкой.
+      */
+      if (error?.name === 'AbortError') {
+        return
+      }
+
       console.error(
-        'Не удалось создать PNG:',
+        'Не удалось сохранить открытку:',
         error,
       )
 
       alert(
         'Не получилось сохранить открытку. Попробуйте ещё раз.',
       )
-
     } finally {
       restoreImages()
       setIsExporting(false)
