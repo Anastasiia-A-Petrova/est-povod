@@ -827,6 +827,14 @@ function CardCreator({
       const telegram =
         window.Telegram?.WebApp
 
+      alert(
+        `Telegram API:\n` +
+        `WebApp: ${!!telegram}\n` +
+        `initData: ${!!telegram?.initData}\n` +
+        `version: ${telegram?.version || 'нет'}\n` +
+        `shareMessage: ${typeof telegram?.shareMessage}`,
+      )
+
       if (
         telegram &&
         telegram.initData &&
