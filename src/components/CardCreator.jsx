@@ -919,20 +919,22 @@ function CardCreator({
 
         try {
           alert(
-            `Telegram:\n\n` +
-            `version: ${telegram.version}\n` +
-            `platform: ${telegram.platform}\n` +
-            `initData: ${telegram.initData ? 'есть' : 'нет'}\n` +
-            `shareMessage: ${typeof telegram.shareMessage}\n` +
-            `msgId: ${data.msgId}`
+            'ШАГ 1\n\n' +
+            'Сейчас вызываем telegram.shareMessage()\n\n' +
+            'msgId:\n' +
+            data.msgId
           )
 
           telegram.shareMessage(data.msgId)
 
+          alert(
+            'ШАГ 2\n\n' +
+            'telegram.shareMessage() вернул управление приложению.'
+          )
+
           console.log(
             'Telegram: shareMessage call finished',
           )
-
         } catch (shareError) {
           console.error(
             'Telegram shareMessage threw:',
