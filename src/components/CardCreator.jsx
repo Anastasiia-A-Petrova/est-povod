@@ -925,7 +925,18 @@ function CardCreator({
             data.msgId
           )
 
-          telegram.shareMessage(data.msgId)
+          telegram.shareMessage(data.msgId, (sent) => {
+            alert(
+              'CALLBACK shareMessage\n\n' +
+              'Результат: ' +
+              String(sent)
+            )
+
+            console.log(
+              'Telegram: shareMessage callback',
+              sent
+            )
+          })
 
           alert(
             'ШАГ 2\n\n' +
