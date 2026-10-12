@@ -645,6 +645,7 @@ function CardCreator({
   }
 
   const handleDownload = async () => {
+    alert('Кнопка «Сохранить» работает')
     if (isExporting) return
 
     const card = getExportCard()
