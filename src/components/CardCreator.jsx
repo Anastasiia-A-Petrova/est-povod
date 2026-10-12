@@ -918,9 +918,13 @@ function CardCreator({
         })
 
         try {
-          console.log(
-            'Telegram: calling shareMessage',
-            data.msgId,
+          alert(
+            `Telegram:\n\n` +
+            `version: ${telegram.version}\n` +
+            `platform: ${telegram.platform}\n` +
+            `initData: ${telegram.initData ? 'есть' : 'нет'}\n` +
+            `shareMessage: ${typeof telegram.shareMessage}\n` +
+            `msgId: ${data.msgId}`
           )
 
           telegram.shareMessage(data.msgId)
