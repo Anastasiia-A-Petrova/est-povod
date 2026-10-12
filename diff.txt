@@ -1,0 +1,187 @@
+diff --git a/src/components/CardCreator.jsx b/src/components/CardCreator.jsx
+index 3cc3eab..0c38236 100644
+--- a/src/components/CardCreator.jsx
++++ b/src/components/CardCreator.jsx
+@@ -705,9 +705,7 @@ function CardCreator({
+     const card = getExportCard()
+ 
+     if (!card) {
+-      alert(
+-        'Не удалось найти открытку для отправки.',
+-      )
++      alert('Не удалось найти открытку для отправки.')
+       return
+     }
+ 
+@@ -719,20 +717,9 @@ function CardCreator({
+       await waitForRender()
+ 
+       restoreImages = await prepareImagesForExport(card)
++
+       await waitForRender()
+ 
+-      /*
+-       * Важный момент:
+-       * раньше здесь использовалось
+-       *
+-       * fetch(dataUrl)
+-       *
+-       * что может работать нестабильно в Telegram
+-       * WebView и некоторых браузерах.
+-       *
+-       * Теперь получаем Blob непосредственно
+-       * через html-to-image.
+-       */
+       const blob = await toBlob(card, {
+         pixelRatio: 2,
+         cacheBust: true,
+@@ -742,9 +729,7 @@ function CardCreator({
+       })
+ 
+       if (!blob) {
+-        throw new Error(
+-          'html-to-image не вернул Blob',
+-        )
++        throw new Error('html-to-image не вернул Blob')
+       }
+ 
+       const file = new File(
+@@ -755,71 +740,80 @@ function CardCreator({
+         },
+       )
+ 
+-      /*
+-       * Сначала пробуем нативное меню
+-       * «Поделиться».
+-       */
+-      if (
++      const shareData = {
++        files: [file],
++        title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
++        text: `${greeting}\n\n${shareCaption}`,
++      }
++
++      const canUseWebShare =
+         typeof navigator !== 'undefined' &&
+         typeof navigator.share === 'function'
+-      ) {
+-        let canShareFile = false
+ 
+-        if (
+-          typeof navigator.canShare ===
+-          'function'
+-        ) {
+-          try {
+-            canShareFile =
+-              navigator.canShare({
+-                files: [file],
+-              })
+-          } catch {
+-            canShareFile = false
+-          }
+-        }
++      let canShareFile = false
+ 
+-        if (canShareFile) {
+-          await navigator.share({
++      if (
++        canUseWebShare &&
++        typeof navigator.canShare === 'function'
++      ) {
++        try {
++          canShareFile = navigator.canShare({
+             files: [file],
+-            title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
+-            text: `${greeting}\n\n${shareCaption}`,
+           })
+-
+-          return
++        } catch (error) {
++          console.warn(
++            'Проверка navigator.canShare не удалась:',
++            error,
++          )
+         }
+       }
+ 
++      if (canUseWebShare && canShareFile) {
++        await navigator.share(shareData)
++        return
++      }
++
+       /*
+-       * Если браузер не умеет делиться файлами,
+-       * просто сохраняем PNG.
++       * Telegram WebView или браузер не умеет
++       * передавать созданный PNG через Web Share.
++       *
++       * В таком случае хотя бы открываем системное
++       * меню "Поделиться" для текста и ссылок.
+        */
+-      const dataUrl =
+-        await toPng(card, {
+-          pixelRatio: 2,
+-          cacheBust: true,
+-          backgroundColor: '#ffffff',
+-          imagePlaceholder:
+-            'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
++      if (canUseWebShare) {
++        await navigator.share({
++          title: `ЕСТЬ ПОВОД! — ${occasion.title}`,
++          text: `${greeting}\n\n${shareCaption}`,
+         })
+ 
+-      const link =
+-        document.createElement('a')
++        return
++      }
+ 
+-      link.download = 'otkrytka.png'
+-      link.href = dataUrl
++      /*
++       * Последний fallback:
++       * копируем текст поздравления и ссылки.
++       */
++      if (navigator.clipboard?.writeText) {
++        await navigator.clipboard.writeText(
++          `${greeting}\n\n${shareCaption}`,
++        )
+ 
+-      document.body.appendChild(link)
+-      link.click()
+-      link.remove()
++        alert(
++          'Telegram не разрешил отправить изображение напрямую. Текст поздравления и ссылки скопированы.',
++        )
++
++        return
++      }
++
++      throw new Error(
++        'На этом устройстве функция «Поделиться» недоступна.',
++      )
+     } catch (error) {
+       /*
+-       * Пользователь нажал «Отмена» в меню
+-       * поделиться — это не ошибка.
++       * Пользователь сам закрыл системное
++       * окно "Поделиться".
+        */
+-      if (
+-        error?.name === 'AbortError'
+-      ) {
++      if (error?.name === 'AbortError') {
+         return
+       }
+ 
+@@ -829,9 +823,8 @@ function CardCreator({
+       )
+ 
+       alert(
+-        'Не удалось поделиться открыткой. Попробуйте сохранить PNG.',
++        'Не удалось открыть меню «Поделиться». Попробуйте ещё раз.',
+       )
+-
+     } finally {
+       restoreImages()
+       setIsExporting(false)

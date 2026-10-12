@@ -921,9 +921,31 @@ function CardCreator({
           )
         })
 
-        telegram.shareMessage(data.msgId)
+        console.log('Telegram: calling shareMessage', data.msgId)
+
+        try {
+          telegram.shareMessage(data.msgId, (success) => {
+            console.log('Telegram shareMessage callback:', success)
+
+            if (success) {
+              console.log('Telegram: share callback success')
+            } else {
+              console.error('Telegram: share callback returned false')
+            }
+          })
+
+          console.log('Telegram: shareMessage call finished')
+        } catch (shareError) {
+          console.error('Telegram shareMessage threw:', shareError)
+
+          alert(
+            `Ошибка Telegram shareMessage:\n\n` +
+            `${shareError?.message || shareError}`
+          )
+        }
 
         return
+
       }
 
       /*
