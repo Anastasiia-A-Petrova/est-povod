@@ -1238,6 +1238,11 @@ function App() {
   ] = useState(todayString)
 
   const [
+    showYearCalendar,
+    setShowYearCalendar,
+  ] = useState(false)
+
+  const [
     apiOccasions,
     setApiOccasions,
   ] = useState([])
@@ -2063,6 +2068,12 @@ function App() {
     }
   }
 
+  function toggleYearCalendar() {
+    setShowYearCalendar(
+      (visible) => !visible,
+    )
+  }
+
   function goToToday() {
     const now = new Date()
 
@@ -2098,6 +2109,19 @@ function App() {
     setCurrentMonth(
       Number(dateString.slice(5, 7)) - 1,
     )
+  }
+
+  function openYearMonth(monthIndex) {
+    setCurrentMonth(monthIndex)
+    setShowYearCalendar(false)
+
+    const firstDay = toDateString(
+      currentYear,
+      monthIndex,
+      1,
+    )
+
+    setSelectedDate(firstDay)
   }
 
   /*
@@ -2260,7 +2284,13 @@ function App() {
       </header>
 
       <main className="workspace">
-        <section className="calendar-section">
+        <section
+          className={`calendar-section ${
+            showYearCalendar
+              ? 'year-view-active'
+              : ''
+          }`}
+          >
           <div className="calendar-switcher">
             {calendarModes.map(
               (mode) => (
@@ -2402,6 +2432,24 @@ function App() {
              ========================= */}
 
           <div className="calendar-header">
+
+            <button
+              type="button"
+              className={`year-calendar-button ${
+                showYearCalendar
+                  ? 'active'
+                  : ''
+              }`}
+              onClick={
+                toggleYearCalendar
+              }
+              aria-expanded={
+                showYearCalendar
+              }
+            >
+              📅 Год
+            </button>
+
             <button
               type="button"
               className="month-arrow"
@@ -2464,6 +2512,130 @@ function App() {
             </label>
 
           </div>
+
+          {showYearCalendar && (
+            <div className="year-calendar">
+              {monthNames.map(
+                (monthName, monthIndex) => {
+                  const monthDays =
+                    getCalendarDays(
+                      currentYear,
+                      monthIndex,
+                    )
+
+                  return (
+                    <div
+                      className="year-month"
+                      key={monthName}
+                    >
+                      <button
+                        type="button"
+                        className="year-month-title"
+                        onClick={() =>
+                          openYearMonth(
+                            monthIndex,
+                          )
+                        }
+                      >
+                        {monthName}
+                      </button>
+
+                      <div className="year-weekdays">
+                        {weekdayNames.map(
+                          (weekday) => (
+                            <span
+                              key={weekday}
+                            >
+                              {weekday}
+                            </span>
+                          ),
+                        )}
+                      </div>
+
+                      <div className="year-month-grid">
+                        {monthDays.map(
+                          (
+                            dateString,
+                            index,
+                          ) => {
+                            if (!dateString) {
+                              return (
+                                <span
+                                  className="year-day empty"
+                                  key={`empty-${index}`}
+                                />
+                              )
+                            }
+
+                            const dayOccasions =
+                              getDayOccasions(
+                                dateString,
+                              )
+
+                            const isToday =
+                              dateString ===
+                              todayString
+
+                            const isSelected =
+                              dateString ===
+                              selectedDate
+
+                            return (
+                              <button
+                                type="button"
+                                key={dateString}
+                                className={`year-day ${
+                                  isToday
+                                    ? 'today'
+                                    : ''
+                                } ${
+                                  isSelected
+                                    ? 'selected'
+                                    : ''
+                                } ${
+                                  dayOccasions.length
+                                    ? 'has-occasion'
+                                    : ''
+                                }`}
+                                onClick={() => {
+                                  setSelectedDate(
+                                    dateString,
+                                  )
+
+                                  setCurrentMonth(
+                                    monthIndex,
+                                  )
+
+                                  setShowYearCalendar(
+                                    false,
+                                  )
+                                }}
+                                title={dayOccasions
+                                  .map(
+                                    (occasion) =>
+                                      occasion.title,
+                                  )
+                                  .join(', ')}
+                              >
+                                {Number(
+                                  dateString.slice(-2),
+                                )}
+
+                                {dayOccasions.length >
+                                  0 && (
+                                  <span className="year-day-dot" />
+                                )}
+                              </button>
+                            )
+                          },
+                        )}
+                      </div>
+                    </div>
+                  )
+                },
+              )}
+            </div>
+          )}
 
           {loading && (
             <div className="calendar-status">
