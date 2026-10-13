@@ -858,7 +858,7 @@ const server =
             file.buffer.length,
 
           'Content-Disposition':
-            'attachment; filename="otkrytka.png"',
+            `attachment; filename="otkrytka.png"; filename*=UTF-8''${encodeURIComponent(file.filename || 'otkrytka.png')}`,   
 
           'Cache-Control':
             'no-store',
