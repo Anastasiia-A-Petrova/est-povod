@@ -407,7 +407,11 @@ function CardCreator({
     useState('rounded')
 
   const [imageSize, setImageSize] =
-    useState(140)
+    useState(
+      window.matchMedia('(max-width: 768px)').matches
+        ? 105
+        : 140,
+    )
 
   const [greetingIndex, setGreetingIndex] =
     useState(0)
@@ -752,11 +756,6 @@ function CardCreator({
       )
 
     } catch (error) {
-      console.error(
-        'Не удалось сохранить открытку:',
-        error,
-      )
-
       alert(
         'Не получилось сохранить открытку.\n\n' +
         (error?.message || String(error)),
@@ -974,59 +973,16 @@ function CardCreator({
         * окно выбора чата.
         */
 
-        telegram.onEvent('shareMessageSent', () => {
-          alert('Telegram сообщил: открытка отправлена!')
-        })
-
-        telegram.onEvent('shareMessageFailed', (event) => {
-          alert(
-            'Telegram сообщил об ошибке:\n\n' +
-            JSON.stringify(event, null, 2)
-          )
-        })
-
         try {
-          alert(
-            'ШАГ 1\n\n' +
-            'Сейчас вызываем telegram.shareMessage()\n\n' +
-            'msgId:\n' +
-            data.msgId
-          )
-
-          telegram.shareMessage(data.msgId, (sent) => {
-            alert(
-              'CALLBACK shareMessage\n\n' +
-              'Результат: ' +
-              String(sent)
-            )
-
-            console.log(
-              'Telegram: shareMessage callback',
-              sent
-            )
-          })
-
-          alert(
-            'ШАГ 2\n\n' +
-            'telegram.shareMessage() вернул управление приложению.'
-          )
-
-          console.log(
-            'Telegram: shareMessage call finished',
-          )
+          telegram.shareMessage(data.msgId)
         } catch (shareError) {
-          console.error(
-            'Telegram shareMessage threw:',
-            shareError,
-          )
-
           alert(
             `Ошибка Telegram shareMessage:\n\n` +
             `${shareError?.message || shareError}`,
           )
         }
 
-        return  
+        return
       }
 
       /*
@@ -1113,17 +1069,13 @@ function CardCreator({
       throw new Error(
         'На этом устройстве функция «Поделиться» недоступна.',
       )
+
     } catch (error) {
       if (
         error?.name === 'AbortError'
       ) {
         return
       }
-
-      console.error(
-        'Ошибка при отправке открытки:',
-        error,
-      )
 
       alert(
         `Ошибка при отправке открытки: ${
@@ -1224,12 +1176,8 @@ function CardCreator({
           'Готовых открыток для этого повода пока не нашли.',
         )
       }
-    } catch (error) {
-      console.error(
-        'Ошибка поиска готовых открыток:',
-        error,
-      )
 
+    } catch {
       setReadyCardsError(
         'Не удалось найти готовые открытки. Попробуйте ещё раз.',
       )
@@ -1298,11 +1246,7 @@ function CardCreator({
       link.remove()
 
       URL.revokeObjectURL(blobUrl)
-    } catch (error) {
-      console.error(
-        'Не удалось сохранить готовую открытку:',
-        error,
-      )
+    } catch {
 
       /*
       * Это как раз тот случай, когда внешний
@@ -1417,26 +1361,13 @@ function CardCreator({
         'noopener,noreferrer',
       )
     } catch (error) {
-      /*
-      * Отмена системного меню Share — нормальная
-      * ситуация, ничего не показываем.
-      */
+
       if (
         error?.name === 'AbortError'
       ) {
         return
       }
 
-      console.error(
-        'Не удалось поделиться готовой открыткой:',
-        error,
-      )
-
-      /*
-      * Пока нет Cloudflare-прокси.
-      * Поэтому даём пользователю открыть
-      * оригинальную картинку.
-      */
       window.open(
         selectedReadyCard.image,
         '_blank',

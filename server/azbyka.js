@@ -114,8 +114,6 @@ async function login() {
     )
   }
 
-  console.log('🔐 Авторизация в Azbyka API...')
-
   const response = await fetch(
     `${BASE_URL}/api-v2/login`,
     {
@@ -149,13 +147,8 @@ async function login() {
   tokenExpiresAt =
     Date.now() + 50 * 60 * 1000
 
-  console.log(
-    '✅ Azbyka API: авторизация успешна',
-  )
-
   return token
 }
-
 
 
 // ============================================================
@@ -785,16 +778,6 @@ const server =
           const downloadUrl =
             `${baseUrl}/api/telegram/download/${fileId}`
 
-          console.log(
-            'Download card URL:',
-            downloadUrl,
-          )
-
-          console.log(
-            'Download card size:',
-            imageBuffer.length,
-          )
-
           response.writeHead(200, {
             'Content-Type':
               'application/json; charset=utf-8',
@@ -936,11 +919,7 @@ const server =
           })
 
           const imageUrl =
-            `${PUBLIC_BASE_URL}/api/telegram/file/${fileId}`
-
-          console.log('Telegram card image URL:', imageUrl)
-          console.log('Telegram card image size:', imageBuffer.length)
-          console.log('Telegram card filename:', filename)            
+            `${PUBLIC_BASE_URL}/api/telegram/file/${fileId}`           
 
           const telegramResponse = await fetch(
             `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/savePreparedInlineMessage`,
@@ -970,11 +949,6 @@ const server =
           )
 
           const telegramData = await telegramResponse.json()
-
-          console.log(
-            'Telegram prepared message response:',
-            JSON.stringify(telegramData, null, 2),
-          )
 
           if (!telegramResponse.ok || !telegramData.ok) {
             console.error(
@@ -1104,8 +1078,6 @@ const server =
         return
       }
 
-
-
       // ------------------------------------------------------
       // READY CARDS
       // ------------------------------------------------------
@@ -1136,14 +1108,6 @@ const server =
 
             return
           }
-
-          console.log('')
-          console.log(
-            '🖼️ Запрос готовых открыток:',
-          )
-          console.log(
-            `   ${title}`,
-          )
 
           const result =
             await searchReadyCards(title)
@@ -1179,8 +1143,6 @@ const server =
         return
       }
 
-
-
       // ------------------------------------------------------
       // ORTHODOX DATE
       // ------------------------------------------------------
@@ -1193,8 +1155,6 @@ const server =
           url.searchParams.get(
             'date',
           )
-
-
 
         if (!date) {
           response.writeHead(400, {
@@ -1211,8 +1171,6 @@ const server =
 
           return
         }
-
-
 
         // Simple date validation.
         if (
@@ -1235,19 +1193,11 @@ const server =
           return
         }
 
-
-
         try {
-          console.log(
-            `\n📅 Запрос православного дня: ${date}`,
-          )
-
           const result =
             await buildOrthodoxDate(
               date,
             )
-
-
 
           response.writeHead(200, {
             'Content-Type':
