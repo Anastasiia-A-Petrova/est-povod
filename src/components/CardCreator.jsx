@@ -380,6 +380,17 @@ const GREETINGS = [
   'Пусть сегодняшний день станет началом ещё одного прекрасного периода в жизни. Счастья вам и всего самого доброго!'
 ]
 
+function makeFileName(title, extension) {
+  const safeTitle =
+    (title || 'открытка')
+      .trim()
+      .replace(/[<>:"/\\|?*\x00-\x1F]/g, '')
+      .replace(/\s+/g, ' ')
+      .slice(0, 80) || 'открытка'
+
+  return `${safeTitle}.${extension}`
+}
+
 function CardCreator({
   occasion = {
     title: 'День рождения',
@@ -723,8 +734,10 @@ function CardCreator({
 
             body: JSON.stringify({
               imageBase64,
-              filename:
-                'otkrytka.png',
+              filename: makeFileName(
+                occasion.title,
+                'png',
+              ),
             }),
           },
         )
@@ -948,8 +961,10 @@ function CardCreator({
                 caption:
                   `${greeting}\n\n${shareCaption}`,
 
-                filename:
-                  'otkrytka.jpg',
+                filename: makeFileName(
+                  occasion.title,
+                  'jpg',
+                ),
               }),
             },
           )
@@ -996,7 +1011,10 @@ function CardCreator({
 
       const file = new File(
         [pngBlob],
-        'otkrytka.png',
+        makeFileName(
+          occasion.title,
+          'png',
+        ),
         {
           type: 'image/png',
         },
@@ -1230,7 +1248,10 @@ function CardCreator({
               : 'jpg'
 
       const fileName =
-        `otkrytka-${Date.now()}.${extension}`
+        makeFileName(
+          `${selectedReadyCard.title || occasion.title} — готовая открытка`,
+          extension,
+        )
 
       const blobUrl =
         URL.createObjectURL(blob)
@@ -1309,7 +1330,10 @@ function CardCreator({
       const file =
         new File(
           [blob],
-          `otkrytka.${extension}`,
+          makeFileName(
+            `${selectedReadyCard.title || occasion.title} — готовая открытка`,
+            extension,
+          ),
           {
             type:
               blob.type ||

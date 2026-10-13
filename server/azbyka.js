@@ -871,7 +871,6 @@ const server =
 
         return
       }
-
     
       if (request.method === 'POST' && request.url === '/api/telegram/share') {
         try {
@@ -914,6 +913,7 @@ const server =
 
           telegramFiles.set(fileId, {
             buffer: imageBuffer,
+            contentType: 'image/jpeg',
             filename,
             expiresAt: Date.now() + 30 * 60 * 1000,
           })
@@ -1024,7 +1024,7 @@ const server =
           }
 
           response.writeHead(200, {
-            'Content-Type': 'image/jpeg',
+            'Content-Type': file.contentType || 'image/jpeg',
             'Content-Length': file.buffer.length,
             'Cache-Control': 'no-store',
             'Content-Disposition': `inline; filename="${file.filename}"`,
