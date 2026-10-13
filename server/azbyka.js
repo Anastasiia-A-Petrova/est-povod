@@ -857,9 +857,6 @@ const server =
           'Content-Length':
             file.buffer.length,
 
-          'Content-Disposition':
-            `attachment; filename="${file.filename || 'otkrytka.png'}"`,
-
           'Cache-Control':
             'no-store',
 
@@ -1027,7 +1024,6 @@ const server =
             'Content-Type': file.contentType || 'image/jpeg',
             'Content-Length': file.buffer.length,
             'Cache-Control': 'no-store',
-            'Content-Disposition': `inline; filename="otkrytka.jpg"`,
             'Access-Control-Allow-Origin': '*',
           })
 
