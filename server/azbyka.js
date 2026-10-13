@@ -857,6 +857,9 @@ const server =
           'Content-Length':
             file.buffer.length,
 
+          'Content-Disposition':
+            'attachment; filename="otkrytka.png"',
+
           'Cache-Control':
             'no-store',
 
