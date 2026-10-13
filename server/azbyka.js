@@ -1027,7 +1027,7 @@ const server =
             'Content-Type': file.contentType || 'image/jpeg',
             'Content-Length': file.buffer.length,
             'Cache-Control': 'no-store',
-            'Content-Disposition': `inline; filename="${file.filename}"`,
+            'Content-Disposition': `inline; filename="otkrytka.jpg"`,
             'Access-Control-Allow-Origin': '*',
           })
 
