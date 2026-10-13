@@ -241,6 +241,22 @@ const occasions = [
     recipients: ['Друзьям'],
   },
 
+  {
+    id: 'earth-day',
+    date: '04-22',
+    title: 'День Земли',
+    description:
+      'День, посвящённый нашей планете, природе и заботе об окружающей среде.',
+    category: 'nature',
+    categoryLabel: 'Природа',
+    icon: '🌍',
+    calendar: 'secular',
+    type: 'nature',
+    priority: 74,
+    congratulatable: true,
+    recipients: ['Родным', 'Друзьям', 'Коллегам'],
+  },
+
   // =========================================================
   // МАЙ
   // =========================================================
@@ -291,6 +307,22 @@ const occasions = [
     priority: 76,
     congratulatable: true,
     recipients: ['Родным', 'Друзьям'],
+  },
+
+  {
+    id: 'slavic-writing-day',
+    date: '05-24',
+    title: 'День славянской письменности и культуры',
+    description:
+      'Праздник славянской письменности, культуры и духовного наследия.',
+    category: 'culture',
+    categoryLabel: 'Культура',
+    icon: '📖',
+    calendar: 'secular',
+    type: 'culture',
+    priority: 78,
+    congratulatable: true,
+    recipients: ['Родным', 'Друзьям', 'Коллегам'],
   },
 
   // =========================================================
@@ -400,6 +432,22 @@ const occasions = [
     recipients: ['Друзьям'],
   },
 
+  {
+    id: 'friends-day',
+    date: '06-09',
+    title: 'День друзей',
+    description:
+      'Добрый повод вспомнить о друзьях и сказать им несколько тёплых слов.',
+    category: 'friendship',
+    categoryLabel: 'Дружба',
+    icon: '🤝',
+    calendar: 'secular',
+    type: 'friendship',
+    priority: 80,
+    congratulatable: true,
+    recipients: ['Друзьям'],
+  },
+
   // =========================================================
   // ИЮЛЬ
   // =========================================================
@@ -450,6 +498,26 @@ const occasions = [
     priority: 88,
     congratulatable: true,
     recipients: ['Друзьям'],
+  },
+
+  {
+    id: 'navy-day',
+    dateRule: {
+      type: 'lastWeekday',
+      month: 7,
+      weekday: 0,
+    },
+    title: 'День Военно-Морского Флота',
+    description:
+      'Праздник военных моряков и всех, кто связан с Военно-Морским Флотом.',
+    category: 'professional',
+    categoryLabel: 'Профессиональные',
+    icon: '⚓',
+    calendar: 'secular',
+    type: 'professional',
+    priority: 84,
+    congratulatable: true,
+    recipients: ['Морякам', 'Военным', 'Родным'],
   },
 
   // =========================================================
@@ -509,6 +577,22 @@ const occasions = [
     priority: 78,
     congratulatable: true,
     recipients: ['Друзьям', 'Коллегам'],
+  },
+
+  {
+    id: 'russian-flag-day',
+    date: '08-22',
+    title: 'День Государственного флага России',
+    description:
+      'Праздник одного из главных государственных символов России.',
+    category: 'state',
+    categoryLabel: 'Государственные',
+    icon: '🇷🇺',
+    calendar: 'secular',
+    type: 'official',
+    priority: 82,
+    congratulatable: true,
+    recipients: ['Родным', 'Друзьям', 'Коллегам'],
   },
 
   // =========================================================
@@ -767,6 +851,47 @@ const occasions = [
     priority: 86,
     congratulatable: true,
     recipients: ['Друзьям'],
+  },
+
+  {
+    id: 'fathers-day',
+    dateRule: {
+      type: 'nthWeekday',
+      month: 10,
+      weekday: 0,
+      occurrence: 3,
+    },
+    title: 'День отца',
+    description:
+      'Тёплый семейный праздник в честь пап и отцовства.',
+    category: 'family',
+    categoryLabel: 'Семейные',
+    icon: '👨‍👧‍👦',
+    calendar: 'secular',
+    type: 'family',
+    priority: 88,
+    congratulatable: true,
+    recipients: ['Папе', 'Родным'],
+  },
+
+  {
+    id: 'motorist-day',
+    dateRule: {
+      type: 'lastWeekday',
+      month: 10,
+      weekday: 0,
+    },
+    title: 'День автомобилиста',
+    description:
+      'Профессиональный праздник водителей и всех, кто связан с автомобильным транспортом.',
+    category: 'professional',
+    categoryLabel: 'Профессиональные',
+    icon: '🚗',
+    calendar: 'secular',
+    type: 'professional',
+    priority: 78,
+    congratulatable: true,
+    recipients: ['Водителям', 'Автомобилистам', 'Коллегам'],
   },
 
   // =========================================================
