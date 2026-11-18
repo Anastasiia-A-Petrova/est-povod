@@ -649,6 +649,7 @@ function CardCreator({
     // Эти строки добавляются всегда
     '🌐 Сайт «ЕСТЬ ПОВОД!»: https://anastasiia-a-petrova.github.io/est-povod-max',
     '📱 Приложение в RuStore: https://www.rustore.ru/catalog/app/ru.anastasiia.estpovod',
+    '💌 ЕСТЬ ПОВОД! в Telegram: https://t.me/EstPovodApp_Bot?startapp',
     '❤️ ЕСТЬ ПОВОД! в MAX: https://max.ru/se14632161_bot',
   ]
     .filter(Boolean)
