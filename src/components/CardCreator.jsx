@@ -394,6 +394,109 @@ function makeFileName(title, extension) {
   return `${safeTitle}.${extension}`
 }
 
+
+async function shareImageInTelegram(
+  imageBlob,
+  caption,
+  filename,
+) {
+  const telegram = window.Telegram?.WebApp
+
+  // Если это не Telegram Mini App — ничего не делаем.
+  if (
+    !telegram?.initData ||
+    typeof telegram.shareMessage !== 'function'
+  ) {
+    return false
+  }
+
+  // Telegram-сервер принимает JPEG.
+  const image = new Image()
+  const imageUrl = URL.createObjectURL(imageBlob)
+
+  let jpegBlob
+
+  try {
+    await new Promise((resolve, reject) => {
+      image.onload = resolve
+      image.onerror = () => reject(
+        new Error('Не удалось подготовить изображение для Telegram'),
+      )
+      image.src = imageUrl
+    })
+
+    const canvas = document.createElement('canvas')
+    canvas.width = image.naturalWidth
+    canvas.height = image.naturalHeight
+
+    const context = canvas.getContext('2d')
+
+    if (!context) {
+      throw new Error('Не удалось обработать изображение')
+    }
+
+    context.drawImage(image, 0, 0)
+
+    jpegBlob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', 0.92)
+    })
+  } finally {
+    URL.revokeObjectURL(imageUrl)
+  }
+
+  if (!jpegBlob) {
+    throw new Error('Не удалось преобразовать открытку в JPEG')
+  }
+
+  const imageBase64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(
+      new Error('Не удалось подготовить изображение для Telegram'),
+    )
+
+    reader.readAsDataURL(jpegBlob)
+  })
+
+  const response = await fetch(
+    'https://est-povod-api.onrender.com/api/telegram/share',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        initData: telegram.initData,
+        imageBase64,
+        caption,
+        filename,
+      }),
+    },
+  )
+
+  const data = await response.json()
+
+  if (!response.ok || !data.ok || !data.msgId) {
+    throw new Error(
+      data.error || 'Telegram не смог подготовить открытку',
+    )
+  }
+
+  try {
+    await telegram.shareMessage(data.msgId)
+  } catch (error) {
+    throw new Error(
+      `Telegram не смог открыть окно отправки: ${
+        error?.message || error
+      }`,
+    )
+  }
+
+  return true
+}
+
+
 function CardCreator({
   occasion = {
     title: 'День рождения',
@@ -857,7 +960,15 @@ function CardCreator({
         )
       }
 
+      const telegramShared = await shareImageInTelegram(
+        pngBlob,
+        `${greeting}\n\n${shareCaption}`,
+        makeFileName(occasion.title, 'jpg'),
+      )
 
+      if (telegramShared) {
+        return
+      }
 
       /*
       * ---------------------------------------------------------
@@ -1282,6 +1393,16 @@ function CardCreator({
           selectedReadyCard.title ||
           occasion.title
         }`
+
+      const telegramShared = await shareImageInTelegram(
+        blob,
+        shareCaption,
+        fileName.replace(/\.[^.]+$/, '.jpg'),
+      )
+
+      if (telegramShared) {
+        return
+      }
 
       /*
       * 1. Лучший вариант:
