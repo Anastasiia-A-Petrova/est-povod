@@ -487,22 +487,22 @@ a {
   min-height: 44px;
   padding: 0 15px;
 
-  border: 1px solid #e1d5c2;
+  border: 1px solid #ead6df;
   border-radius: 13px;
 
   background: linear-gradient(
     135deg,
-    #fffaf2,
-    #faf3e7
+    #fff8fb,
+    #f7edf2
   );
 
-  color: #9a7647;
+  color: #9a6077;
 
   font-size: 12px;
   font-weight: 800;
 
   box-shadow:
-    0 4px 12px rgba(178, 139, 97, 0.08);
+    0 4px 12px rgba(194, 126, 151, 0.10);
 
   transition:
     border-color 0.18s ease,
@@ -513,18 +513,18 @@ a {
 }
 
 .today-button:hover {
-  border-color: #d5bc96;
+  border-color: #dcb8c7;
 
   background: linear-gradient(
     135deg,
-    #fff6e8,
-    #f8eddc
+    #fff3f7,
+    #f3e3ea
   );
 
-  color: #87643b;
+  color: #875269;
 
   box-shadow:
-    0 6px 16px rgba(178, 139, 97, 0.14);
+    0 6px 16px rgba(194, 126, 151, 0.16);
 
   transform: translateY(-1px);
 }
@@ -548,13 +548,13 @@ a {
   min-height: 40px;
   padding: 0 12px;
 
-  border: 1px solid #e1d7c6;
+  border: 1px solid #ead8e0;
   border-radius: 12px;
 
   background: linear-gradient(
     135deg,
-    #fff6e8,
-    #f8eddc
+    #fff8fb,
+    #f7eef3
   );
 
   color: var(--text);
@@ -566,7 +566,7 @@ a {
   cursor: pointer;
 
   box-shadow:
-    0 3px 10px rgba(178, 139, 97, 0.08);
+    0 3px 10px rgba(194, 126, 151, 0.08);
 
   transition:
     border-color 0.18s ease,
@@ -576,11 +576,11 @@ a {
 }
 
 .date-picker-button input:hover {
-  border-color: #d2a45f;
-  background: var(--gold-soft);
+  border-color: #d9afbf;
+  background: #f7e8ee;
 
   box-shadow:
-    0 5px 14px rgba(178, 139, 97, 0.12);
+    0 5px 14px rgba(194, 126, 151, 0.13);
 
   transform: translateY(-1px);
 }
@@ -588,11 +588,11 @@ a {
 .date-picker-button input:focus {
   outline: none;
 
-  border-color: var(--gold);
+  border-color: #d287a0;
 
   box-shadow:
-    0 0 0 3px rgba(210, 164, 95, 0.14),
-    0 5px 14px rgba(178, 139, 97, 0.10);
+    0 0 0 3px rgba(210, 135, 160, 0.14),
+    0 5px 14px rgba(194, 126, 151, 0.10);
 }
 
 @media (max-width: 640px) {
@@ -2379,13 +2379,13 @@ a {
 
 .year-calendar-button {
   border: 0;
-  background: #fff1e8;
+  background: #f8edf2;
   padding: 8px 12px;
   border-radius: 12px;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: #110703;
+  color: #765365;
   cursor: pointer;
   transition:
     background 0.2s ease,
@@ -2395,13 +2395,17 @@ a {
 }
 
 .year-calendar-button:hover {
-  background: #ffe2d2;
-  color: #040b13;
+  background: #f1dce5;
+  color: #654555;
   transform: translateY(-1px);
 }
 
 .year-calendar-button.active {
-  background: #2073e0;
+  background: linear-gradient(
+    135deg,
+    #d287a0,
+    #9b83ad
+  );
   color: #fff;
 }
 
@@ -2431,8 +2435,8 @@ a {
   min-width: 0;
   padding: 12px 10px 10px;
   border-radius: 16px;
-  background: #fffaf7;
-  border: 1px solid #f3e7df;
+  background: #fdfbfc;
+  border: 1px solid #eadfe5;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -2440,7 +2444,7 @@ a {
 
 .year-month:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(180, 120, 90, 0.1);
+  box-shadow: 0 6px 18px rgba(177, 130, 158, 0.12);
 }
 
 .year-month-title {
@@ -2454,13 +2458,13 @@ a {
   font: inherit;
   font-size: 16px;
   font-weight: 700;
-  color: #c45d3a;
+  color: #9a6077;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .year-month-title:hover {
-  color: #a94728;
+  color: #7f4d64;
   text-decoration: none;
 }
 
@@ -2481,7 +2485,7 @@ a {
   text-align: center;
   font-size: 10px;
   font-weight: 600;
-  color: #b8aaa2;
+  color: var(--text-muted);
 }
 
 
@@ -2496,7 +2500,7 @@ a {
   padding: 0;
   font: inherit;
   font-size: 11px;
-  color: #514943;
+  color: var(--text-soft);
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -2505,8 +2509,8 @@ a {
 }
 
 .year-day:hover {
-  background: #ffe9dc;
-  color: #a94728;
+  background: #f8e9ef;
+  color: #8f5870;
   transform: scale(1.08);
 }
 
@@ -2519,18 +2523,22 @@ a {
 
 .year-day.today {
   font-weight: 700;
-  color: #d45d3a;
-  box-shadow: inset 0 0 0 1.5px #f0a080;
+  color: var(--blue-dark);
+  box-shadow: inset 0 0 0 1.5px #9fc4cf;
 }
 
 
 /* Выбранная дата */
 
 .year-day.selected {
-  background: #e97852;
+  background: linear-gradient(
+    135deg,
+    #d287a0,
+    #9b83ad
+  );
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 2px 5px rgba(210, 100, 65, 0.2);
+  box-shadow: 0 2px 6px rgba(155, 131, 173, 0.22);
 }
 
 
@@ -2538,7 +2546,7 @@ a {
 
 .year-day.has-occasion:not(.selected) {
   font-weight: 700;
-  color: #7d5a48;
+  color: #76586a;
 }
 
 
@@ -2551,7 +2559,7 @@ a {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #e97852;
+  background: #d287a0;
   transform: translateX(-50%);
 }
 
@@ -2597,4 +2605,277 @@ a {
     width: 3px;
     height: 3px;
   }
+}
+
+.privacy-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #fff7ed;
+}
+
+.privacy-page__inner {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-sizing: border-box;
+}
+
+.privacy-page h1 {
+  margin: 0 0 24px;
+  font-size: 32px;
+}
+
+.privacy-page h2 {
+  margin: 32px 0 12px;
+  font-size: 20px;
+}
+
+.privacy-page p {
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .privacy-page {
+    padding: 20px 12px;
+  }
+
+  .privacy-page__inner {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .privacy-page h1 {
+    font-size: 26px;
+  }
+}
+
+.app-footer {
+  text-align: center;
+  padding: 24px 16px 28px;
+}
+
+.app-footer a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.65;
+}
+
+.app-footer a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   APP LINKS — RUSTORE / MAX
+   ========================================================= */
+
+.app-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.app-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 16px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.app-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(80, 90, 120, 0.10);
+}
+
+.app-link-rustore {
+  color: #ffffff;
+  background: linear-gradient(135deg, #d96b9b, #c65387);
+  border-color: #c65387;
+  box-shadow: 0 3px 10px rgba(198, 83, 135, 0.18);
+}
+
+.app-link-max {
+  color: #ffffff;
+  background: linear-gradient(135deg, #668bd1, #4e70b5);
+  border-color: #4e70b5;
+  box-shadow: 0 3px 10px rgba(78, 112, 181, 0.18);
+}
+
+.app-link-arrow {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.app-footer {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 30px 16px 28px;
+  text-align: center;
+}
+
+.footer-title {
+  margin-bottom: 12px;
+  color: #718087;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 13px;
+}
+
+.footer-links a {
+  color: #71849a;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #bd7296;
+}
+
+.footer-separator {
+  color: #c5cbd2;
+}
+
+.footer-note {
+  margin-top: 12px;
+  color: #9aa7ab;
+  font-size: 11px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+  .app-links {
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .app-link {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .footer-links {
+    gap: 8px;
+    font-size: 12px;
+  }
+}
+
+.good-day-cards {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.good-day-cards-button {
+  border: 0;
+  border-radius: 14px;
+  padding: 10px 16px;
+  background: #f3d6e1;
+  color: #7d4f63;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.good-day-cards-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 14px rgba(0, 0, 0, 0.12);
+}
+
+.good-day-cards-button:active {
+  transform: translateY(0);
+}
+
+.good-day-cards-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+
+  display: grid;
+  gap: 6px;
+
+  min-width: 220px;
+  padding: 8px;
+
+  background: #ffffff;
+  border: 1px solid #eadfe5;
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 30px rgba(177, 130, 158, 0.14);
+}
+
+.good-day-cards-menu button {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 13px;
+
+  background: #faf1f5;
+  color: #6f4b5b;
+
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.good-day-cards-menu button:hover {
+  background: #f3dce5;
+  color: #684355;
+  transform: translateX(2px);
+}
+
+.good-day-cards-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.good-day-cards-row .good-day-cards {
+  position: relative;
 }

@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react'
-import { toPng, toBlob } from 'html-to-image'
+﻿import { useMemo, useState } from 'react'
+import { toBlob } from 'html-to-image'
 import './CardCreator.css'
 
+const API_URL =
+  'https://est-povod-api.onrender.com'
+
 const IMAGE_PROXY_URL =
-  'https://est-povod-images.anastasiiapetrovam1.workers.dev/'
+  `${API_URL}/api/image-proxy`
 
 const STYLES = [
   {
@@ -111,84 +114,84 @@ const WARM_COLORS = [
   {
     id: 'cream',
     name: 'Кремовый',
-    value: '#f7eddf',
+    value: '#f1dfc6',
     text: '#493c32',
   },
 
   {
     id: 'rose',
     name: 'Пудровый',
-    value: '#f3d8dc',
+    value: '#eebfc9',
     text: '#4b353b',
   },
 
   {
     id: 'sage',
     name: 'Шалфей',
-    value: '#dce7d8',
+    value: '#c8ddc2',
     text: '#344238',
   },
 
   {
     id: 'sky',
     name: 'Небесный',
-    value: '#dce9f3',
+    value: '#c5dff0',
     text: '#34414d',
   },
 
   {
     id: 'sand',
     name: 'Песочный',
-    value: '#e8dcc4',
+    value: '#dfcba6',
     text: '#493d2f',
   },
 
   {
     id: 'lavender',
     name: 'Лавандовый',
-    value: '#e4dcef',
+    value: '#d5c5e8',
     text: '#43394d',
   },
 
   {
     id: 'butter',
     name: 'Сливочный',
-    value: '#f6e7b8',
+    value: '#f2d98d',
     text: '#51452d',
   },
 
   {
     id: 'terracotta',
     name: 'Терракотовый',
-    value: '#e8c1ad',
+    value: '#dda68b',
     text: '#51382e',
   },
 
   {
     id: 'mist',
     name: 'Туманный',
-    value: '#dce1e2',
+    value: '#cbd6d8',
     text: '#384144',
   },
 
   {
     id: 'pearl',
     name: 'Жемчужный',
-    value: '#eee9e4',
+    value: '#e4d9d1',
     text: '#443f3b',
   },
 
   {
     id: 'apricot',
     name: 'Абрикосовый',
-    value: '#f3d3b5',
+    value: '#efbd91',
     text: '#513c2d',
   },
 
   {
     id: 'dusty-blue',
     name: 'Дымчато-синий',
-    value: '#ccdce5',
+    value: '#b4d0df',
     text: '#35434c',
   },
 ]
@@ -197,84 +200,84 @@ const MINIMAL_COLORS = [
   {
     id: 'white',
     name: 'Белый',
-    value: '#fafafa',
+    value: '#ffffff',
     accent: '#1f2933',
   },
 
   {
     id: 'ivory',
     name: 'Слоновая кость',
-    value: '#f7f4ed',
+    value: '#f5efe3',
     accent: '#39352f',
   },
 
   {
     id: 'cream',
     name: 'Молочный',
-    value: '#f2ede4',
+    value: '#f3e4d2',
     accent: '#443d36',
   },
 
   {
     id: 'sand',
     name: 'Песочный',
-    value: '#ebe6dc',
+    value: '#e5d3b8',
     accent: '#45413b',
   },
 
   {
     id: 'mist',
     name: 'Серый туман',
-    value: '#e9eceb',
+    value: '#dfe7e6',
     accent: '#343c3d',
   },
 
   {
     id: 'stone',
     name: 'Каменный',
-    value: '#deded9',
+    value: '#d3d5d1',
     accent: '#303330',
   },
 
   {
     id: 'blue',
     name: 'Холодный',
-    value: '#edf3f7',
+    value: '#d8e8f0',
     accent: '#263b4d',
   },
 
   {
     id: 'ice',
     name: 'Лёд',
-    value: '#e5eef2',
+    value: '#c8dfe8',
     accent: '#304653',
   },
 
   {
     id: 'sage',
     name: 'Шалфей',
-    value: '#e4ebe3',
+    value: '#cddfc9',
     accent: '#344238',
   },
 
   {
     id: 'dusty-rose',
     name: 'Пыльная роза',
-    value: '#eee3e4',
+    value: '#e4cdd2',
     accent: '#493d40',
   },
 
   {
     id: 'lavender',
     name: 'Лаванда',
-    value: '#e9e6ef',
+    value: '#d9d0e6',
     accent: '#413d4b',
   },
 
   {
     id: 'charcoal',
     name: 'Графит',
-    value: '#e2e3e1',
+    value: '#c9cdcb',
     accent: '#252827',
   },
 ]
@@ -480,10 +483,19 @@ function CardCreator({
     occasion.infoUrl || null
 
   const shareCaption = [
-    '☀️ Открытка создана в приложении «ЕСТЬ ПОВОД!»',
-    `🔎 Подробнее о празднике: ${infoUrl || 'Ссылка не указана'}`,
-    '🌐 Сайт «ЕСТЬ ПОВОД!»: https://est-povod-nnm.pages.dev/',
-  ].join('\n\n')
+    // Эта строка добавляется всегда
+    '☀️ Открытка из приложения «ЕСТЬ ПОВОД!»',
+
+    // Эта строка добавляется ТОЛЬКО если есть infoUrl
+    infoUrl ? `🔎 Подробнее о празднике: ${infoUrl}` : null,
+
+    // Эти строки добавляются всегда
+    '🌐 Сайт «ЕСТЬ ПОВОД!»: https://anastasiia-a-petrova.github.io/est-povod-max',
+    '📱 Приложение в RuStore: https://www.rustore.ru/catalog/app/ru.anastasiia.estpovod',
+    '❤️ ЕСТЬ ПОВОД! в MAX: https://max.ru/se14632161_bot',
+  ]
+    .filter(Boolean)
+    .join('\n\n')  
 
   /*
    * Находим именно открытку, которая сейчас
@@ -530,6 +542,18 @@ function CardCreator({
     return document.querySelector(
       '.greeting-card',
     )
+  }
+
+  const getExportBackground = () => {
+    if (style === 'warm') {
+      return selectedWarmColor.value
+    }
+
+    if (style === 'minimal') {
+      return selectedMinimalColor.value
+    }
+
+    return undefined
   }
 
   /*
@@ -686,7 +710,7 @@ function CardCreator({
       const blob = await toBlob(card, {
         pixelRatio: 2,
         cacheBust: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: getExportBackground(),
         imagePlaceholder:
           'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
       })
@@ -697,81 +721,94 @@ function CardCreator({
         )
       }
 
-      const imageBase64 =
-        await new Promise(
-          (resolve, reject) => {
-            const reader =
-              new FileReader()
-
-            reader.onload = () => {
-              resolve(
-                reader.result,
-              )
-            }
-
-            reader.onerror = () => {
-              reject(
-                new Error(
-                  'Не удалось подготовить открытку',
-                ),
-              )
-            }
-
-            reader.readAsDataURL(blob)
-          },
-        )
-
-      const response =
-        await fetch(
-          'https://est-povod-api.onrender.com/api/telegram/download',
-          {
-            method: 'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-            },
-
-            body: JSON.stringify({
-              imageBase64,
-              filename: makeFileName(
-                occasion.title,
-                'png',
-              ),
-            }),
-          },
-        )
-
-      const data =
-        await response.json()
-
-      if (
-        !response.ok ||
-        !data.ok ||
-        !data.downloadUrl
-      ) {
-        throw new Error(
-          data.error ||
-            'Не удалось подготовить скачивание',
-        )
-      }
-
-      /*
-      * Открываем настоящий URL файла.
-      * Backend отдаёт его как attachment,
-      * поэтому Android должен предложить
-      * скачать PNG.
-      */
-
-      window.open(
-        data.downloadUrl,
-        '_blank',
+      const fileName = makeFileName(
+        occasion.title,
+        'png',
       )
 
+      /*
+      * =====================================================
+      * ОБЫЧНЫЙ БРАУЗЕР
+      * =====================================================
+      *
+      * Backend здесь не нужен.
+      * Сохраняем уже созданный Blob напрямую.
+      */
+
+      const file = new File(
+        [blob],
+        fileName,
+        {
+          type: 'image/png',
+        },
+      )
+
+      const isMaxMobile =
+        Boolean(
+          window.WebApp &&
+          ['android', 'ios'].includes(
+            window.WebApp.platform,
+          ),
+        )
+
+      if (
+        isMaxMobile &&
+        typeof navigator.share === 'function'
+      ) {
+        let canShareFile = false
+
+        if (
+          typeof navigator.canShare === 'function'
+        ) {
+          try {
+            canShareFile =
+              navigator.canShare({
+                files: [file],
+              })
+          } catch {
+            canShareFile = false
+          }
+        }
+
+        if (canShareFile) {
+          await navigator.share({
+            files: [file],
+            title: fileName,
+          })
+
+          return
+        }
+      }
+
+      const blobUrl =
+        URL.createObjectURL(blob)
+
+      try {
+        const link =
+          document.createElement('a')
+
+        link.href = blobUrl
+        link.download = fileName
+        link.style.display = 'none'
+
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      } finally {
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl)
+        }, 1000)
+      }
     } catch (error) {
+      console.error(
+        'Download error:',
+        error,
+      )
+
       alert(
         'Не получилось сохранить открытку.\n\n' +
-        (error?.message || String(error)),
+          (error?.message ||
+            String(error)),
       )
     } finally {
       restoreImages()
@@ -809,7 +846,7 @@ function CardCreator({
       const pngBlob = await toBlob(card, {
         pixelRatio: 2,
         cacheBust: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: getExportBackground(),
         imagePlaceholder:
           'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
       })
@@ -820,193 +857,12 @@ function CardCreator({
         )
       }
 
-      /*
-      * Telegram InlineQueryResultPhoto требует JPEG.
-      *
-      * Поэтому превращаем PNG в JPEG прямо
-      * в браузере. На самой открытке ничего
-      * не меняем.
-      */
-      const pngUrl =
-        URL.createObjectURL(pngBlob)
 
-      const image = new Image()
-
-      await new Promise(
-        (resolve, reject) => {
-          image.onload = resolve
-          image.onerror = () =>
-            reject(
-              new Error(
-                'Не удалось подготовить JPEG',
-              ),
-            )
-
-          image.src = pngUrl
-        },
-      )
-
-      const canvas =
-        document.createElement('canvas')
-
-      canvas.width = image.naturalWidth
-      canvas.height = image.naturalHeight
-
-      const context =
-        canvas.getContext('2d')
-
-      if (!context) {
-        URL.revokeObjectURL(pngUrl)
-
-        throw new Error(
-          'Не удалось создать Canvas',
-        )
-      }
-
-      context.fillStyle = '#ffffff'
-
-      context.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      )
-
-      context.drawImage(
-        image,
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      )
-
-      const jpegBlob =
-        await new Promise(
-          (resolve) =>
-            canvas.toBlob(
-              resolve,
-              'image/jpeg',
-              0.92,
-            ),
-        )
-
-      URL.revokeObjectURL(pngUrl)
-
-      if (!jpegBlob) {
-        throw new Error(
-          'Не удалось создать JPEG',
-        )
-      }
-
-      /*
-      * ---------------------------------------------------------
-      * TELEGRAM MINI APP
-      * ---------------------------------------------------------
-      */
-
-      const telegram =
-        window.Telegram?.WebApp
-
-      if (
-        telegram &&
-        telegram.initData &&
-        typeof telegram.shareMessage ===
-          'function'
-      ) {
-        /*
-        * Превращаем JPEG в base64,
-        * чтобы передать его на Render.
-        */
-        const imageBase64 =
-          await new Promise(
-            (resolve, reject) => {
-              const reader =
-                new FileReader()
-
-              reader.onload = () => {
-                resolve(
-                  reader.result,
-                )
-              }
-
-              reader.onerror = () => {
-                reject(
-                  new Error(
-                    'Не удалось подготовить изображение для Telegram',
-                  ),
-                )
-              }
-
-              reader.readAsDataURL(
-                jpegBlob,
-              )
-            },
-          )
-
-        const response =
-          await fetch(
-            'https://est-povod-api.onrender.com/api/telegram/share',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type':
-                  'application/json',
-              },
-              body: JSON.stringify({
-                initData:
-                  telegram.initData,
-
-                imageBase64,
-
-                caption:
-                  `${greeting}\n\n${shareCaption}`,
-
-                filename: makeFileName(
-                  occasion.title,
-                  'jpg',
-                ),
-              }),
-            },
-          )
-
-        const data =
-          await response.json()
-
-        if (
-          !response.ok ||
-          !data.ok ||
-          !data.msgId
-        ) {
-          throw new Error(
-            data.error ||
-              'Telegram не смог подготовить открытку',
-          )
-        }
-
-        /*
-        * Telegram открывает своё нативное
-        * окно выбора чата.
-        */
-
-        try {
-          telegram.shareMessage(data.msgId)
-        } catch (shareError) {
-          alert(
-            `Ошибка Telegram shareMessage:\n\n` +
-            `${shareError?.message || shareError}`,
-          )
-        }
-
-        return
-      }
 
       /*
       * ---------------------------------------------------------
       * ОБЫЧНЫЙ БРАУЗЕР
       * ---------------------------------------------------------
-      *
-      * Telegram здесь не используется.
-      * Сохраняем прежнее поведение сайта.
       */
 
       const file = new File(
@@ -1161,7 +1017,7 @@ function CardCreator({
 
     try {
       const response = await fetch(
-        'https://est-povod-api.onrender.com/api/ready-cards',
+        `${API_URL}/api/ready-cards`,
         {
           method: 'POST',
           headers: {
@@ -1214,6 +1070,72 @@ function CardCreator({
     setSelectedReadyCard(null)
   }
 
+  const fetchReadyCardBlob = async (imageUrl) => {
+    /*
+    * 1. Сначала пробуем получить картинку напрямую.
+    * Это самый быстрый вариант, если источник
+    * разрешает CORS.
+    */
+    try {
+      const response = await fetch(imageUrl)
+
+      if (response.ok) {
+        const blob = await response.blob()
+
+        if (blob.type?.startsWith('image/')) {
+          return blob
+        }
+      }
+    } catch (error) {
+      console.warn(
+        'Direct ready-card fetch failed:',
+        error,
+      )
+    }
+
+    /*
+    * 2. Если источник запретил прямой fetch,
+    * пробуем через наш backend image-proxy.
+    */
+    try {
+      const proxyUrl = new URL(IMAGE_PROXY_URL)
+
+      proxyUrl.searchParams.set(
+        'url',
+        imageUrl,
+      )
+
+      const response = await fetch(
+        proxyUrl.href,
+      )
+
+      if (!response.ok) {
+        throw new Error(
+          `Proxy HTTP ${response.status}`,
+        )
+      }
+
+      const blob = await response.blob()
+
+      if (!blob.type?.startsWith('image/')) {
+        throw new Error(
+          `Прокси вернул не изображение: ${
+            blob.type || 'unknown'
+          }`,
+        )
+      }
+
+      return blob
+    } catch (error) {
+      console.error(
+        'Ready-card proxy fetch failed:',
+        error,
+      )
+
+      throw error
+    }
+  }
+
   const handleReadyCardDownload = async () => {
     if (
       !selectedReadyCard?.image ||
@@ -1225,18 +1147,16 @@ function CardCreator({
     setReadyCardActionLoading(true)
 
     try {
-      const response = await fetch(
+      /*
+      * Получаем настоящий файл картинки.
+      *
+      * fetchReadyCardBlob сначала попробует
+      * скачать напрямую, а если источник
+      * запрещает CORS — через наш backend proxy.
+      */
+      const blob = await fetchReadyCardBlob(
         selectedReadyCard.image,
       )
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP ${response.status}`,
-        )
-      }
-
-      const blob =
-        await response.blob()
 
       const extension =
         blob.type === 'image/png'
@@ -1247,37 +1167,57 @@ function CardCreator({
               ? 'webp'
               : 'jpg'
 
-      const fileName =
-        makeFileName(
-          `${selectedReadyCard.title || occasion.title} — готовая открытка`,
-          extension,
-        )
+      const fileName = makeFileName(
+        `${
+          selectedReadyCard.title ||
+          occasion.title
+        } — готовая открытка`,
+        extension,
+      )
 
+      /*
+      * Создаём временную локальную ссылку
+      * на полученный файл.
+      */
       const blobUrl =
         URL.createObjectURL(blob)
 
-      const link =
-        document.createElement('a')
+      try {
+        const link =
+          document.createElement('a')
 
-      link.href = blobUrl
-      link.download = fileName
+        link.href = blobUrl
+        link.download = fileName
+        link.style.display = 'none'
 
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
+        document.body.appendChild(link)
 
-      URL.revokeObjectURL(blobUrl)
-    } catch {
+        link.click()
+        link.remove()
+      } finally {
+        /*
+        * Не удаляем Blob URL мгновенно.
+        * На мобильных браузерах скачивание
+        * может начаться не сразу.
+        */
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl)
+        }, 3000)
+      }
+    } catch (error) {
+      console.error(
+        'Ready-card download failed:',
+        error,
+      )
 
       /*
-      * Это как раз тот случай, когда внешний
-      * сайт может запретить fetch из браузера
-      * через CORS.
+      * ПОСЛЕДНИЙ FALLBACK.
       *
-      * Пока локально не подключаем Cloudflare.
-      * Вместо этого открываем оригинал —
-      * пользователь всё равно сможет сохранить
-      * изображение средствами браузера / Telegram.
+      * Только если:
+      * - прямой fetch не сработал
+      * - backend proxy тоже не сработал
+      *
+      * тогда открываем оригинал.
       */
       window.open(
         selectedReadyCard.image,
@@ -1301,22 +1241,14 @@ function CardCreator({
 
     try {
       /*
-      * Сначала пробуем получить сам файл.
-      * Если источник разрешает CORS, можем
-      * поделиться именно изображением.
+      * Получаем настоящий файл картинки.
+      *
+      * Сначала напрямую, затем через
+      * наш backend image-proxy.
       */
-      const response = await fetch(
+      const blob = await fetchReadyCardBlob(
         selectedReadyCard.image,
       )
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP ${response.status}`,
-        )
-      }
-
-      const blob =
-        await response.blob()
 
       const extension =
         blob.type === 'image/png'
@@ -1327,25 +1259,40 @@ function CardCreator({
               ? 'webp'
               : 'jpg'
 
-      const file =
-        new File(
-          [blob],
-          makeFileName(
-            `${selectedReadyCard.title || occasion.title} — готовая открытка`,
-            extension,
-          ),
-          {
-            type:
-              blob.type ||
-              'image/jpeg',
-          },
-        )
+      const fileName = makeFileName(
+        `${
+          selectedReadyCard.title ||
+          occasion.title
+        } — готовая открытка`,
+        extension,
+      )
 
+      const file = new File(
+        [blob],
+        fileName,
+        {
+          type:
+            blob.type ||
+            'image/jpeg',
+        },
+      )
+
+      const title =
+        `ЕСТЬ ПОВОД! — ${
+          selectedReadyCard.title ||
+          occasion.title
+        }`
+
+      /*
+      * 1. Лучший вариант:
+      * системное меню "Поделиться"
+      * с настоящим файлом изображения.
+      */
       if (
         typeof navigator !== 'undefined' &&
         typeof navigator.share === 'function'
       ) {
-        let canShareFile = true
+        let canShareFile = false
 
         if (
           typeof navigator.canShare ===
@@ -1362,36 +1309,102 @@ function CardCreator({
         }
 
         if (canShareFile) {
+          try {
+            await navigator.share({
+              files: [file],
+              title,
+              text: shareCaption,
+            })
+
+            return
+          } catch (error) {
+            /*
+            * Пользователь сам закрыл
+            * системное меню — ничего
+            * больше делать не надо.
+            */
+            if (error?.name === 'AbortError') {
+              return
+            }
+
+            console.warn(
+              'File share failed:',
+              error,
+            )
+          }
+        }
+
+        /*
+        * 2. Если браузер умеет Web Share,
+        * но не умеет передавать файл,
+        * делимся хотя бы текстом и ссылками.
+        */
+        try {
           await navigator.share({
-            files: [file],
-            title: `ЕСТЬ ПОВОД! — ${
-              selectedReadyCard.title ||
-              occasion.title
-            }`,
+            title,
             text: shareCaption,
           })
 
           return
+        } catch (error) {
+          if (error?.name === 'AbortError') {
+            return
+          }
+
+          console.warn(
+            'Text share failed:',
+            error,
+          )
         }
       }
 
       /*
-      * Если браузер не умеет делиться файлами,
-      * открываем оригинал.
+      * 3. Если Web Share вообще не работает,
+      * сохраняем сам файл.
+      *
+      * Это лучше, чем сразу отправлять
+      * пользователя на внешний сайт.
       */
-      window.open(
-        selectedReadyCard.image,
-        '_blank',
-        'noopener,noreferrer',
+      const blobUrl =
+        URL.createObjectURL(blob)
+
+      try {
+        const link =
+          document.createElement('a')
+
+        link.href = blobUrl
+        link.download = fileName
+        link.style.display = 'none'
+
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      } finally {
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl)
+        }, 3000)
+      }
+
+      alert(
+        'Открытка сохранена. Теперь её можно отправить как обычное изображение.',
       )
     } catch (error) {
-
-      if (
-        error?.name === 'AbortError'
-      ) {
+      if (error?.name === 'AbortError') {
         return
       }
 
+      console.error(
+        'Ready-card share failed:',
+        error,
+      )
+
+      /*
+      * 4. ПОСЛЕДНИЙ FALLBACK.
+      *
+      * Только если не удалось даже получить
+      * файл напрямую или через proxy,
+      * открываем оригинал изображения.
+      */
       window.open(
         selectedReadyCard.image,
         '_blank',
@@ -1497,7 +1510,7 @@ function CardCreator({
         <div className="bright-kicker">
           {isOrthodox
             ? 'ПРАВОСЛАВНЫЙ ПРАЗДНИК'
-            : 'С ПРАЗДНИКОМ!'}
+            : 'ХОРОШЕГО НАСТРОЕНИЯ!'}
         </div>
 
         {renderOccasionImage()}
@@ -1765,7 +1778,7 @@ function CardCreator({
                           </span>
 
                           <strong>
-                            С ПРАЗДНИКОМ!
+                            ХОРОШЕГО НАСТРОЕНИЯ!
                           </strong>
 
                           <span className="style-preview-dot" />

@@ -7,18 +7,14 @@ import './App.css'
 import customOccasions from './data/occasions'
 import CardCreator from './components/CardCreator'
 import { getOrthodoxDate } from './api/orthodox'
+import PrivacyPolicy from './PrivacyPolicy'
+import GoodDayCards from './components/GoodDayCards'
 
 const NAGER_API =
   'https://date.nager.at/api/v3'
 
 const RUSSIAN_CALENDAR_API =
   'https://calendar.kuzyak.in/api/calendar'
-
-const WIKIPEDIA_API =
-  'https://ru.wikipedia.org/w/api.php'
-
-const WIKIPEDIA_IMAGE_CACHE_KEY =
-  'greeting-wikipedia-holiday-images'
 
 const calendarModes = [
   {
@@ -281,82 +277,6 @@ function getWikipediaSearchUrl(
   )}`
 }
 
-function getWikipediaCacheKey(title) {
-  return String(title || '')
-    .trim()
-    .toLowerCase()
-}
-
-function readWikipediaImageCache() {
-  try {
-    const saved = localStorage.getItem(
-      WIKIPEDIA_IMAGE_CACHE_KEY,
-    )
-
-    if (!saved) return {}
-
-    const parsed = JSON.parse(saved)
-
-    return parsed &&
-      typeof parsed === 'object'
-      ? parsed
-      : {}
-  } catch {
-    return {}
-  }
-}
-
-function saveWikipediaImageCache(cache) {
-  try {
-    localStorage.setItem(
-      WIKIPEDIA_IMAGE_CACHE_KEY,
-      JSON.stringify(cache),
-    )
-  } catch {
-    // Кеш необязателен.
-  }
-}
-
-async function fetchWikipediaImageUrl(
-  title,
-) {
-  if (!title) return null
-
-  const url =
-    `${WIKIPEDIA_API}` +
-    `?action=query` +
-    `&generator=search` +
-    `&gsrsearch=${encodeURIComponent(title)}` +
-    `&gsrnamespace=0` +
-    `&gsrlimit=1` +
-    `&prop=pageimages` +
-    `&piprop=thumbnail` +
-    `&pithumbsize=120` +
-    `&format=json` +
-    `&origin=*`
-
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    throw new Error(
-      `Wikipedia HTTP ${response.status}`,
-    )
-  }
-
-  const data = await response.json()
-
-  const pages = Object.values(
-    data?.query?.pages || {},
-  )
-
-  const thumbnail =
-    pages[0]?.thumbnail?.source
-
-  return typeof thumbnail === 'string' &&
-    thumbnail.trim()
-    ? thumbnail
-    : null
-}
 
 /*
  * =========================================================
@@ -1147,6 +1067,7 @@ function normalizeCustomOccasion(
         'Друзьям',
       ],
     infoUrl:
+      occasion.sourceUrl ||
       occasion.infoUrl ||
       getWikipediaSearchUrl(
         occasion.title,
@@ -1208,6 +1129,13 @@ function getRelativeDateLabel(
  */
 
 function App() {
+  if (
+    window.location.pathname ===
+    '/privacy'
+  ) {
+    return <PrivacyPolicy />
+  }
+
   const todayString =
     getTodayString()
 
@@ -1270,13 +1198,6 @@ function App() {
 
   const [apiError, setApiError] =
     useState(false)
-
-  const [
-    wikipediaImages,
-    setWikipediaImages,
-  ] = useState(() =>
-    readWikipediaImageCache(),
-  )
 
   const [
     showPersonalModal,
@@ -1609,127 +1530,6 @@ function App() {
       [currentYear],
     )
 
-  /*
-   * =======================================================
-   * WIKIPEDIA IMAGES
-   * =======================================================
-   *
-   * Эта часть остаётся прежней:
-   * Wikipedia используется для светских
-   * праздников.
-   *
-   * Православные картинки сюда больше
-   * не попадают — их отдаёт Azbyka.
-   */
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadWikipediaImages() {
-      const cache =
-        readWikipediaImageCache()
-
-      const secularOccasions = [
-        ...apiOccasions,
-        ...normalizedCustomOccasions,
-      ].filter(
-        (occasion) =>
-          occasion.calendar ===
-            'secular' &&
-          !occasion.imageUrl &&
-          occasion.title,
-      )
-
-      const titles = [
-        ...new Set(
-          secularOccasions.map(
-            (occasion) =>
-              occasion.title,
-          ),
-        ),
-      ]
-
-      const missingTitles =
-        titles.filter((title) => {
-          const key =
-            getWikipediaCacheKey(
-              title,
-            )
-
-          return !Object.prototype.hasOwnProperty.call(
-            cache,
-            key,
-          )
-        })
-
-      if (
-        missingTitles.length ===
-        0
-      ) {
-        if (!cancelled) {
-          setWikipediaImages(cache)
-        }
-
-        return
-      }
-
-      const results =
-        await Promise.all(
-          missingTitles.map(
-            async (title) => {
-              try {
-                const imageUrl =
-                  await fetchWikipediaImageUrl(
-                    title,
-                  )
-
-                return {
-                  key:
-                    getWikipediaCacheKey(
-                      title,
-                    ),
-                  imageUrl,
-                }
-              } catch (error) {
-                console.warn(
-                  'Wikipedia image недоступна:',
-                  title,
-                  error,
-                )
-
-                return {
-                  key:
-                    getWikipediaCacheKey(
-                      title,
-                    ),
-                  imageUrl: null,
-                }
-              }
-            },
-          ),
-        )
-
-      if (cancelled) return
-
-      results.forEach(
-        ({ key, imageUrl }) => {
-          cache[key] = imageUrl
-        },
-      )
-
-      saveWikipediaImageCache(cache)
-      setWikipediaImages(cache)
-    }
-
-    loadWikipediaImages()
-
-    return () => {
-      cancelled = true
-    }
-  }, [
-    apiOccasions,
-    normalizedCustomOccasions,
-  ])
 
   /*
    * =======================================================
@@ -1796,39 +1596,15 @@ function App() {
    */
 
   const allOccasions = useMemo(
-    () =>
-      [
-        ...apiOccasions,
-        ...normalizedCustomOccasions,
-        ...normalizedPersonalOccasions,
-      ].map((occasion) => {
-        if (
-          occasion.imageUrl ||
-          occasion.calendar !==
-            'secular'
-        ) {
-          return occasion
-        }
-
-        const imageUrl =
-          wikipediaImages[
-            getWikipediaCacheKey(
-              occasion.title,
-            )
-          ]
-
-        return imageUrl
-          ? {
-              ...occasion,
-              imageUrl,
-            }
-          : occasion
-      }),
+    () => [
+      ...apiOccasions,
+      ...normalizedCustomOccasions,
+      ...normalizedPersonalOccasions,
+    ],
     [
       apiOccasions,
       normalizedCustomOccasions,
       normalizedPersonalOccasions,
-      wikipediaImages,
     ],
   )
 
@@ -2276,10 +2052,34 @@ function App() {
           </h1>
 
           <p className="intro">
-            Календарь праздников и памятных
-            дат, идеи поздравлений и открытки
-            для тех, кто дорог.
+            Праздники и памятные даты,
+            православный календарь,
+            идеи поздравлений и тёплые открытки для близких.
           </p>
+
+          <div className="app-links">
+            <a
+              className="app-link app-link-rustore"
+              href="https://www.rustore.ru/catalog/app/ru.anastasiia.estpovod"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>📱</span>
+              Скачать в RuStore
+              <span className="app-link-arrow">↗</span>
+            </a>
+
+            <a
+              className="app-link app-link-max"
+              href="https://max.ru/se14632161_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>💬</span>
+              Открыть в MAX
+              <span className="app-link-arrow">↗</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -2426,6 +2226,22 @@ function App() {
               </button>
             )}
           </section>
+
+          {/* =========================
+              GOOD DAY CARDS
+            ========================= */}
+
+          <div className="good-day-cards-row">
+            <GoodDayCards
+              onSelect={(title) => {
+                setCardCreatorOccasion({
+                  title,
+                  calendar: 'personal',
+                  congratulatable: true,
+                })
+              }}
+            />
+          </div>
 
           {/* =========================
               CALENDAR HEADER
@@ -3052,6 +2868,36 @@ function App() {
           </div>
         </section>
       </main>
+
+      <footer className="app-footer">
+        <div className="footer-title">
+          ЕСТЬ ПОВОД! 🌞
+        </div>
+
+        <div className="footer-links">
+          <a
+            href="https://www.rustore.ru/catalog/app/ru.anastasiia.estpovod"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            📱 Приложение в RuStore ↗
+          </a>
+
+          <span className="footer-separator">·</span>
+
+          <a
+            href="https://max.ru/se14632161_bot"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            💬 ЕСТЬ ПОВОД! в MAX ↗
+          </a>
+        </div>
+
+        <div className="footer-note">
+          Праздники, памятные даты и тёплые поздравления
+        </div>
+      </footer>
 
       {/* =========================
           PERSONAL MODAL
