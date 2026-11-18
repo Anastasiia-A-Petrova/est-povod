@@ -1,4 +1,4 @@
-import http from 'node:http'
+﻿import http from 'node:http'
 import crypto from 'node:crypto'
 import 'dotenv/config'
 import { searchReadyCards } from './ready-cards/index.js'
@@ -1143,7 +1143,219 @@ const server =
       }
 
       // ------------------------------------------------------
-      // ORTHODOX DATE
+      // IMAGE PROXY
+      // ------------------------------------------------------
+
+      if (
+        request.method === 'GET' &&
+        url.pathname === '/api/image-proxy'
+      ) {
+        try {
+          const imageUrl =
+            url.searchParams.get('url')
+
+          if (!imageUrl) {
+            response.writeHead(400, {
+              'Content-Type':
+                'application/json; charset=utf-8',
+            })
+
+            response.end(
+              JSON.stringify({
+                error:
+                  'Не указан URL изображения.',
+              }),
+            )
+
+            return
+          }
+
+          let sourceUrl
+
+          try {
+            sourceUrl = new URL(imageUrl)
+          } catch {
+            response.writeHead(400, {
+              'Content-Type':
+                'application/json; charset=utf-8',
+            })
+
+            response.end(
+              JSON.stringify({
+                error:
+                  'Некорректный URL изображения.',
+              }),
+            )
+
+            return
+          }
+
+          const host =
+            sourceUrl.hostname.toLowerCase()
+
+          const isPrivateHost =
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '0.0.0.0' ||
+            host === '::1' ||
+            host.endsWith('.localhost')
+
+          const isAllowedHost =
+            sourceUrl.protocol === 'https:' &&
+            !isPrivateHost
+
+          if (!isAllowedHost) {
+            response.writeHead(403, {
+              'Content-Type':
+                'application/json; charset=utf-8',
+            })
+
+            response.end(
+              JSON.stringify({
+                error:
+                  'Этот адрес изображения запрещён.',
+              }),
+            )
+
+            return
+          }
+
+          const imageResponse =
+            await fetch(sourceUrl.href, {
+              headers: {
+                Accept:
+                  'image/avif,image/webp,image/png,image/jpeg,image/gif,image/*,*/*;q=0.8',
+
+                'User-Agent':
+                  'Mozilla/5.0',
+              },
+
+              redirect: 'follow',
+            })
+
+          if (!imageResponse.ok) {
+            throw new Error(
+              `Источник изображения ответил HTTP ${imageResponse.status}`,
+            )
+          }
+
+          const finalUrl =
+            new URL(imageResponse.url)
+
+          const finalHost =
+            finalUrl.hostname.toLowerCase()
+
+          const finalIsPrivateHost =
+            finalHost === 'localhost' ||
+            finalHost === '127.0.0.1' ||
+            finalHost === '0.0.0.0' ||
+            finalHost === '::1' ||
+            finalHost.endsWith('.localhost')
+
+          const finalHostAllowed =
+            finalUrl.protocol === 'https:' &&
+            !finalIsPrivateHost
+
+          if (!finalHostAllowed) {
+            throw new Error(
+              'Изображение перенаправлено на запрещённый адрес',
+            )
+          }
+
+          const contentType =
+            imageResponse.headers.get(
+              'content-type',
+            ) || ''
+
+          const allowedTypes = [
+            'image/png',
+            'image/jpeg',
+            'image/webp',
+            'image/gif',
+            'image/avif',
+          ]
+
+          const normalizedType =
+            contentType
+              .split(';')[0]
+              .trim()
+              .toLowerCase()
+
+          if (
+            !allowedTypes.includes(
+              normalizedType,
+            )
+          ) {
+            throw new Error(
+              `Источник вернул не изображение: ${
+                contentType || 'неизвестный тип'
+              }`,
+            )
+          }
+
+          const arrayBuffer =
+            await imageResponse.arrayBuffer()
+
+          const imageBuffer =
+            Buffer.from(arrayBuffer)
+
+          const maxImageSize =
+            8 * 1024 * 1024
+
+          if (
+            imageBuffer.length >
+            maxImageSize
+          ) {
+            throw new Error(
+              'Изображение слишком большое',
+            )
+          }
+
+          response.writeHead(200, {
+            'Content-Type':
+              normalizedType,
+
+            'Content-Length':
+              imageBuffer.length,
+
+            'Cache-Control':
+              'public, max-age=86400',
+
+            'Access-Control-Allow-Origin':
+              '*',
+          })
+
+          response.end(imageBuffer)
+        } catch (error) {
+          console.error(
+            '❌ Image proxy error:',
+            error,
+          )
+
+          response.writeHead(502, {
+            'Content-Type':
+              'application/json; charset=utf-8',
+
+            'Access-Control-Allow-Origin':
+              '*',
+          })
+
+          response.end(
+            JSON.stringify({
+              error:
+                error?.message ||
+                'Не удалось загрузить изображение',
+            }),
+          )
+        }
+
+        return
+      }
+
+      // ------------------------------------------------------
+      
+
+            // ORTHODOX DATE
       // ------------------------------------------------------
 
       if (
