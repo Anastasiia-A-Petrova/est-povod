@@ -497,6 +497,60 @@ async function shareImageInTelegram(
 }
 
 
+
+
+async function downloadImageInTelegram(imageBlob, filename) {
+  const telegram = window.Telegram?.WebApp
+
+  if (
+    !telegram?.initData ||
+    typeof telegram.downloadFile !== 'function'
+  ) {
+    return false
+  }
+
+  const imageBase64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(
+      new Error('Не удалось подготовить открытку для скачивания'),
+    )
+
+    reader.readAsDataURL(imageBlob)
+  })
+
+  const response = await fetch(
+    `${API_URL}/api/telegram/download`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        initData: telegram.initData,
+        imageBase64,
+        filename,
+      }),
+    },
+  )
+
+  const data = await response.json()
+
+  if (!response.ok || !data.ok || !data.downloadUrl) {
+    throw new Error(
+      data.error || 'Не удалось подготовить файл для скачивания',
+    )
+  }
+
+  telegram.downloadFile({
+    url: data.downloadUrl,
+    file_name: filename,
+  })
+
+  return true
+}
+
 function CardCreator({
   occasion = {
     title: 'День рождения',
@@ -828,6 +882,13 @@ function CardCreator({
         occasion.title,
         'png',
       )
+
+      const telegramDownloaded =
+        await downloadImageInTelegram(blob, fileName)
+
+      if (telegramDownloaded) {
+        return
+      }
 
       /*
       * =====================================================
@@ -1285,6 +1346,13 @@ function CardCreator({
         } — готовая открытка`,
         extension,
       )
+
+      const telegramDownloaded =
+        await downloadImageInTelegram(blob, fileName)
+
+      if (telegramDownloaded) {
+        return
+      }
 
       /*
       * Создаём временную локальную ссылку
@@ -2489,3 +2557,6 @@ function CardCreator({
 }
 
 export default CardCreator
+
+
+

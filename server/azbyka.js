@@ -710,9 +710,12 @@ const server =
           const body = await readJsonBody(request)
 
           const {
+            initData,
             imageBase64,
             filename = 'otkrytka.png',
           } = body
+
+          validateTelegramInitData(initData)
 
           if (!imageBase64) {
             response.writeHead(400, {
@@ -731,45 +734,53 @@ const server =
             return
           }
 
-          const base64Data =
-            imageBase64.replace(
-              /^data:image\/png;base64,/,
-              '',
-            )
+        if (
+          typeof imageBase64 !== 'string'
+        ) {
+          throw new Error('Изображение отсутствует')
+        }
 
-          const imageBuffer =
-            Buffer.from(
-              base64Data,
-              'base64',
-            )
+        const dataUrlMatch =
+          imageBase64.match(
+            /^data:(image\/(?:png|jpeg|webp|gif));base64,(.+)$/s,
+          )
 
-          if (!imageBuffer.length) {
-            response.writeHead(400, {
-              'Content-Type':
-                'application/json; charset=utf-8',
-            })
+        if (!dataUrlMatch) {
+          throw new Error(
+            'Неподдерживаемый формат изображения',
+          )
+        }
 
-            response.end(
-              JSON.stringify({
-                ok: false,
-                error: 'Empty image',
-              }),
-            )
+        const contentType = dataUrlMatch[1]
+        const base64Data = dataUrlMatch[2]
 
-            return
-          }
+        const imageBuffer =
+          Buffer.from(
+            base64Data,
+            'base64',
+          )
 
-          const fileId =
-            crypto.randomUUID()
+        if (!imageBuffer.length) {
+          throw new Error('Empty image')
+        }
 
-          telegramFiles.set(fileId, {
-            buffer: imageBuffer,
-            contentType: 'image/png',
-            filename,
-            expiresAt:
-              Date.now() +
-              30 * 60 * 1000,
-          })
+        if (imageBuffer.length > 10 * 1024 * 1024) {
+          throw new Error(
+            'Изображение слишком большое',
+          )
+        }
+
+        const fileId =
+          crypto.randomUUID()
+
+        telegramFiles.set(fileId, {
+          buffer: imageBuffer,
+          contentType,
+          filename,
+          expiresAt:
+            Date.now() +
+            30 * 60 * 1000,
+        })
 
           const baseUrl =
             process.env.PUBLIC_BASE_URL ||
@@ -1498,3 +1509,4 @@ server.listen(
     console.log('')
   },
 )
+
